@@ -1,0 +1,32 @@
+{
+    "name":"default",
+    "introduction":"默认字体",
+    "packages":[
+        {
+            "name":"Font1",
+            "_comment":"url这里可以填写'default'或'url(./Font/字体名.ttf)'",
+            "url":"default"
+        },
+        {
+            "name":"Font2",
+            "url":"default"
+        },
+        {
+            "name":"Font3",
+            "url":"default"
+        },
+        {
+            "name":"Font4",
+            "url":"default"
+        },
+        {
+            "name":"Font5",
+            "url":"default"
+        },
+        {
+            "name":"Font6",
+            "url":"default"
+        }
+    ],
+    "statement":"用户自行下载、使用或分发本字体包的行为，均视为完全理解并自愿承担由此产生的一切法律责任与潜在风险。项目方及作者不对用户因使用本字体包引发的任何版权纠纷、侵权指控、经济损失或法律后果承担连带责任。用户有义务自行核实字体许可协议，并确保使用方式符合相关法律法规及授权条款。本声明自用户获取字体包之日起生效，且不因项目后续更新而失效。"
+}
