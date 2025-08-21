@@ -1,0 +1,37 @@
+{
+  "name": "pvz-purple",
+  "version": "1.0.0",
+  "description": "Re-implementation of PVZ in JavaScript.",
+  "main": "index.cjs",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "author": {
+    "name": "AnKangPig",
+    "url": "https://github.com/AnKangPig"
+  },
+  "contributors": [
+    {
+      "name": "Cylix Lee",
+      "email": "cylix.lee@outlook.com",
+      "url": "https://github.com/cylixlee"
+    }
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.8.3",
+    "@electron-forge/maker-deb": "^7.8.3",
+    "@electron-forge/maker-rpm": "^7.8.3",
+    "@electron-forge/maker-squirrel": "^7.8.3",
+    "@electron-forge/maker-zip": "^7.8.3",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.3",
+    "@electron-forge/plugin-fuses": "^7.8.3",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^37.3.1"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
+  }
+}
