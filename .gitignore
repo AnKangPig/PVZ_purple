@@ -1,3 +1,6 @@
-# NPM modules
+# NPM
+package-lock.json
 node_modules/
+
+# Electron Forge
 out/
