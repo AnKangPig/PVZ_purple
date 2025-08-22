@@ -13,11 +13,11 @@
 		"thirdparty/PixiPlugin.min",
 		"core",
 		"init",
-		"startscreen",
-		"selectorscreen",
-		"dialog",
-		"optionsmenu",
-		"zombienote"
+		"scenes/startscreen",
+		"scenes/selectorscreen",
+		"scenes/zombienote",
+		"widgets/dialog",
+		"widgets/optionsmenu",
 	];
 	//加载的英文字体
 	let loadEnFont = [
