@@ -154,6 +154,13 @@
 		const updateStatus=()=>{fb.texture=fullco();};
 		document.addEventListener('fullscreenchange',updateStatus);
 
+		if(navigator.userAgent.includes("Electron")){
+			full=true;
+			updateVisibility();
+			fcheck.visible=false;
+			fb.x=287;
+		}
+
 		let mslot=core.set(
 			new Sprite(img["options_sliderslot"]),
 			{

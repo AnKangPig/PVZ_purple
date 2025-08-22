@@ -50,6 +50,10 @@
 			e.preventDefault();
 		});
 
+		if(navigator.userAgent.includes("Electron")&&localStorage.getItem("full")!=="true"){
+			localStorage.setItem("full",true);
+		}
+
 		//调整大小函数
 		core.resize=()=>{
 			//全屏模式或屏幕过小就拉满，否则维持800*600
