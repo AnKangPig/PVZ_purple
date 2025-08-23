@@ -54,10 +54,10 @@
 			new Container(),
 			{
 				parent:layer,
-				zIndex:5,pos:[1,560]
+				zIndex:5,pos:[0,560]
 			}
 		);
-		tl.to(ssgroup,{y:1, duration: 0.6},0);
+		tl.to(ssgroup,{y:0, duration: 0.6},0);
 
 		//墓碑
 		const ssri=core.set(
@@ -201,7 +201,7 @@
 			}
 		});
 
-		//退出（某些情况下无法真退）
+		//退出（web某些情况下无法真退）
 		const buttonquit=core.set(
 			new Sprite(img["SelectorScreen_Quit1"]),
 			{

@@ -1340,8 +1340,8 @@
             "name":"overlay",
             "transforms":[
                 {
-                    "x":331,
-                    "y":551,
+                    "x":330.15,
+                    "y":550,
                     "f":0,
                     "i":"IMAGE_REANIM_ZOMBIE_HAND_OVERLAY"
                 },
