@@ -2,7 +2,7 @@
 
 ## 使用的项目
 
-YingFengTingYu大佬的PopStudio_Old（不包含，但animate的json是该工具提供的定义）
+YingFengTingYu大佬的PopStudio_Old（不包含，但animation的json是该工具提供的定义）
 
 ckcz123大佬的mota-js-server（一个本地HTTP服务器程序，即“开始游戏.exe”）
 

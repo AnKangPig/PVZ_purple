@@ -222,8 +222,8 @@
 		for (let i in tlist) {//i为字符串索引
 			let action;
 			[action, last] = core.handleframe(tlist[i], last);
-			//如果alpha为1，则不缓动
-			if (action.alpha) action.ease = "steps(1,start)";
+			//如果alpha存在，则不缓动
+			if (action.alpha!==undefined) action.ease = "steps(1,start)";
 			atl.to(sp, action, ((i === "0") ? 0 : ">"));
 		}
 	};
@@ -245,7 +245,7 @@
 		let options;
 		//七种输入对应七种输出
 		//输入：x,y,sx,sy,kx,ky,f
-		//输入：x,y,scaleX,scaleY,skewY,skewX,alpha
+		//输出：x,y,scaleX,scaleY,skewY,skewX,alpha
 		//注意：skewY对应kx，skewX对应-ky
 		if (last === null) options = { x: 0, y: 0, scaleX: 1, scaleY: 1, skewX: 0, skewY: 0, alpha: 1 };
 		else options = { ...last };

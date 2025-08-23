@@ -81,25 +81,39 @@
 		);
 		//设置拖动
 		core.setDrag(cr,slayer);
-		//左右两个按钮
-		let buttona=core.set(
-			dialogbutton(options.button.first.text,()=>{
-				options.button.first.event(slayer);
-			}),
-			{
-				parent:cr,
-				pos:[31,174]
-			}
-		);
-		let buttonb=core.set(
-			dialogbutton(options.button.second.text,()=>{
-				options.button.second.event(slayer);
-			}),
-			{
-				parent:cr,
-				pos:[207,174]
-			}
-		);
+		if(options.button.second){
+			//左右两个按钮
+			let buttona=core.set(
+				dialogbutton(options.button.first.text,()=>{
+					options.button.first.event(slayer);
+				}),
+				{
+					parent:cr,
+					pos:[31,174]
+				}
+			);
+			let buttonb=core.set(
+				dialogbutton(options.button.second.text,()=>{
+					options.button.second.event(slayer);
+				}),
+				{
+					parent:cr,
+					pos:[207,174]
+				}
+			);
+		}else{
+			//单个按钮
+			let buttona=core.set(
+				dialogbutton(options.button.first.text,()=>{
+					options.button.first.event(slayer);
+				},5),
+				{
+					parent:cr,
+					pos:[50,174]
+				}
+			);
+		}
+		
 		return slayer;
 	}
 
@@ -122,7 +136,7 @@
 		)
 		return [left,ma,mb,right];
 	}
-	function dialogbutton(text,event){
+	function dialogbutton(text,event,mnum=2){
 		const cr=core.set(new Container(),{
 			zIndex:2,
 			interactive:true
@@ -137,26 +151,29 @@
 			middle:[img["button_middle"],img["button_down_middle"]],
 			right:[img["button_right"],img["button_down_right"]]
 		};
-		let left=core.set(new Sprite(bimgs.left[0]),{parent:icr,pos:[0,0]})
-		let ma=core.set(new Sprite(bimgs.middle[0]),{parent:icr,pos:[36,0]})
-		let mb=core.set(new Sprite(bimgs.middle[0]),{parent:icr,pos:[82,0]})
-		let right=core.set(new Sprite(bimgs.right[0]),{parent:icr,pos:[128,0]});
+		let left=core.set(new Sprite(bimgs.left[0]),{parent:icr,pos:[0,0]});
+		let middles=[];
+		for(let i=0;i<mnum;i++){
+			middles.push(core.set(new Sprite(bimgs.middle[0]),{parent:icr,pos:[36+i*46,0]}));
+		}
+		let right=core.set(new Sprite(bimgs.right[0]),{parent:icr,pos:[36+mnum*46,0]});
 		
 		let ttext=core.set(
 			new Text(core.afont(text,'Font6',19,0x00d600,-2.5)),{
 				parent:cr,
 				anchor:[0.5,0.5],
-				pos:[80,20],
+				pos:[34+mnum*23,20],
 				zIndex:1
 			}
 		);
 		//一个负责按下时偏移的函数
 		const tt=n=>{
-			ttext.position.set(80+n,20+n);
+			ttext.position.set(34+mnum*23+n,20+n);
 			icr.position.set(n,0);
 			left.texture=bimgs.left[n];
-			ma.texture=bimgs.middle[n];
-			mb.texture=bimgs.middle[n];
+			middles.forEach(middle => {
+				middle.texture=bimgs.middle[n];
+			});
 			right.texture=bimgs.right[n];
 		}
 		core.pointer(cr,{
