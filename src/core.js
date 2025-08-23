@@ -415,7 +415,7 @@
 			} else {
 				filelist = data;
 				const imglist = filelist.filter(n => n.endsWith(".png")).map(n => n.slice(0, -4));
-				fs.writeFile("./assets/image/image.json", JSON.stringify(imglist, null, "	"), "utf-8", () => { console.log("导入成功"); });
+				fs.writeFile("./assets/image/image.json", JSON.stringify({items:imglist}, null, "	"), "utf-8", () => { console.log("导入成功"); });
 			}
 		});
 	}
