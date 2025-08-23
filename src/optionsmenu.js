@@ -155,10 +155,7 @@
 		document.addEventListener('fullscreenchange',updateStatus);
 
 		if(navigator.userAgent.includes("Electron")){
-			full=true;
-			updateVisibility();
-			fcheck.visible=false;
-			fb.x=287;
+			fcheck.visible=false;fb.x=287;
 		}
 
 		let mslot=core.set(
@@ -217,7 +214,7 @@
 				let volume=core.fixed(ratio,2);
 				localStorage.setItem("Sound_Volume",volume);
 				core.soundlist.volume=volume*core.soundlist.factor;
-				core.soundlist.sounds.forEach(sound=>{sound.volume=volume*core.soundlist.factor;});
+				core.soundlist.sounds.forEach(sound=>{sound.volume=core.soundlist.volume;});
 				core.sound("buttonclick");
 			}
 		});
