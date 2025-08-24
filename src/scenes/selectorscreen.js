@@ -5,6 +5,8 @@
 	
 	core.selectorscreen=function(){
 
+		const sanoshadow=false;//是否启用一个渲染bug，切存档会导致第一个按钮阴影消失
+
 		const layer=new Container({width:800,height:600});
 		core.app.stage.addChild(layer);
 		const tl = gsap.timeline();
@@ -31,7 +33,7 @@
 		);
 		tl.to(sscen,{y:250, duration: 0.6},0);
 
-		//1背景 2云 3房子 4左树 5木牌/墓碑 6墓碑上的东西 10设置
+		//1背景 2云 3房子 4左树 5木牌/墓碑 6墓碑上东西的阴影/摆着的其他东西 墓碑上的东西 10设置
 
 		//云（不存在3云）
         for(let i of [1,2,4,5,6,7]){
@@ -98,17 +100,17 @@
 		let flowerpop=()=>core.pitchedsound("limbs_pop",core.fixed(core.random(1,2),2));
 		//右下角能被点掉的三朵小花（彩蛋）
 		const flowerA=core.animate(core.ani["ssf1"],ssgroup);
-		flowerA.cr.zIndex=7;flowerA.frf();
+		flowerA.cr.zIndex=8;flowerA.frf();
 		flowerA.cr.interactive=true;
 		flowerA.cr.addEventListener("pointerdown",()=>{flowerpop();flowerA.play();},{once:true});
 
 		const flowerB=core.animate(core.ani["ssf2"],ssgroup);
-		flowerB.cr.zIndex=7;flowerB.frf();
+		flowerB.cr.zIndex=8;flowerB.frf();
 		flowerB.cr.interactive=true;
 		flowerB.cr.addEventListener("pointerdown",()=>{flowerpop();flowerB.play();},{once:true});
 
 		const flowerC=core.animate(core.ani["ssf3"],ssgroup);
-		flowerC.cr.zIndex=7;flowerC.frf();
+		flowerC.cr.zIndex=8;flowerC.frf();
 		flowerC.cr.interactive=true;
 		flowerC.cr.addEventListener("pointerdown",()=>{flowerpop();flowerC.play();},{once:true});
 
@@ -257,31 +259,60 @@
 				}
 			}
 		});
-		let gamebuttons=["StartAdventure","Adventure","Survival","Challenges","Vasebreaker"];
+		let gamebuttons=["StartAdventure"/*,"Adventure"*/,"Survival","Challenges","Vasebreaker"];
 		let buttontypes=["button","highlight","Shadow"];
 		const gbname=(name,type)=>{
 			const map={
-				Shadow:{
-					Challenges:"Challenge",//无s
-					Vasebreaker:"ZenGarden"//ZenGarden！
-				},
 				button:{
 					StartAdventure:"StartAdventure_Button1"//大写B，多1
 				},
 				highlight:{
 					StartAdventure:"StartAdventure_Highlight",//大写H
 					Vasebreaker:"vasebreaker_highlight"//小写v
+				},
+				Shadow:{
+					Challenges:"Challenge",//无s
+					Vasebreaker:"ZenGarden"//ZenGarden！
 				}
 			}
 			const shadow=(type==="Shadow");
 			let ft="SelectorScreen_",lt=map[type][name];
 			if(shadow)ft+="Shadow_";
-			if(!lt){
-				lt=name;if(!shadow)lt+="_"+type;
-			}
+			if(!lt){lt=name;if(!shadow)lt+="_"+type;}
 			return img[ft+lt];
 		}
+		let gbposmap=[
+			[[405,65],[406,173],[410,257],[413,328]],
+			[[398,66],[407,177],[411,260],[412,330]]
+		];
+		let gbspmap=[];
 		
+		for(let ni=0;ni<4;ni++){
+			let gbutton=core.set(
+				new Sprite(gbname(gamebuttons[ni],"button")),
+				{
+					parent:ssgroup,
+					zIndex:7,
+					pos:gbposmap[0][ni],
+					interactive:true
+				}
+			);
+			let gbshadow=core.set(
+				new Sprite(gbname(gamebuttons[ni],"Shadow")),
+				{
+					parent:ssgroup,
+					zIndex:6,
+					pos:gbposmap[1][ni]
+				}
+			);
+			let gbfilter=null;
+			if(ni!==0){
+				gbfilter=new PIXI.ColorMatrixFilter();
+				gbfilter.brightness(0.5);
+				gbutton.filters=[gbfilter];
+			}
+			gbspmap[ni]=[gbutton,gbshadow];
+		}
 	}
 
 
