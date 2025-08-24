@@ -255,9 +255,32 @@
 				out:()=>{
 					buttonquit.position.set(720,515);Cursor=core.cursor;
 				}
-
 			}
 		});
+		let gamebuttons=["StartAdventure","Adventure","Survival","Challenges","Vasebreaker"];
+		let buttontypes=["button","highlight","Shadow"];
+		const gbname=(name,type)=>{
+			const map={
+				Shadow:{
+					Challenges:"Challenge",//无s
+					Vasebreaker:"ZenGarden"//ZenGarden！
+				},
+				button:{
+					StartAdventure:"StartAdventure_Button1"//大写B，多1
+				},
+				highlight:{
+					StartAdventure:"StartAdventure_Highlight",//大写H
+					Vasebreaker:"vasebreaker_highlight"//小写v
+				}
+			}
+			const shadow=(type==="Shadow");
+			let ft="SelectorScreen_",lt=map[type][name];
+			if(shadow)ft+="Shadow_";
+			if(!lt){
+				lt=name;if(!shadow)lt+="_"+type;
+			}
+			return img[ft+lt];
+		}
 		
 	}
 
