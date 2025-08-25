@@ -259,7 +259,7 @@
 				}
 			}
 		});
-		let gamebuttons=["StartAdventure"/*,"Adventure"*/,"Survival","Challenges","Vasebreaker"];
+		let gamebuttons=["StartAdventure","Survival","Challenges","Vasebreaker"];
 		let buttontypes=["button","highlight","Shadow"];
 		const gbname=(name,type)=>{
 			const map={
@@ -281,19 +281,75 @@
 			if(!lt){lt=name;if(!shadow)lt+="_"+type;}
 			return img[ft+lt];
 		}
+		const gbdialog=(name)=>{
+			core.dialog({
+				title:"未解锁！",
+				text:["进行更多新冒险来解锁"+name],
+				button:{
+					first:{
+						text:"确定",
+						event:(slayer)=>{
+							slayer.destroy();
+						}
+					}
+				}
+			},layer,10);
+		}
 		let gbposmap=[
 			[[405,65],[406,173],[410,257],[413,328]],
 			[[398,66],[407,177],[411,260],[412,330]]
 		];
 		let gbspmap=[];
+
+		let startad=true;
+		if(!startad){
+			gamebuttons[0]="Adventure";
+			gbposmap[0][0]=[405,79];
+			gbposmap[1][0]=[406,80];
+		}
+		gbeventmap=[
+			{
+				event:()=>{
+					gbdialog("abc");
+				}
+			},
+			{
+				event:()=>{
+					gbdialog("abc");
+				},forbid:()=>{
+					gbdialog("迷你游戏");
+				},
+			},
+			{
+				event:()=>{
+					gbdialog("abc");
+				},forbid:()=>{
+					gbdialog("解谜模式");
+				},
+			},
+			{
+				event:()=>{
+					gbdialog("abc");
+				},forbid:()=>{
+					gbdialog("生存模式");
+				},
+			},
+		];
+		gbforbidmap=[false,true,true,true];
 		
 		for(let ni=0;ni<4;ni++){
-			let gbutton=core.set(
-				new Sprite(gbname(gamebuttons[ni],"button")),
+			let gbcr=core.set(
+				new Container(),
 				{
 					parent:ssgroup,
 					zIndex:7,
-					pos:gbposmap[0][ni],
+					pos:gbposmap[0][ni]
+				}
+			);
+			let gbutton=core.set(
+				new Sprite(gbname(gamebuttons[ni],"button")),
+				{
+					parent:gbcr,
 					interactive:true
 				}
 			);
@@ -305,13 +361,48 @@
 					pos:gbposmap[1][ni]
 				}
 			);
-			let gbfilter=null;
-			if(ni!==0){
-				gbfilter=new PIXI.ColorMatrixFilter();
-				gbfilter.brightness(0.5);
-				gbutton.filters=[gbfilter];
-			}
-			gbspmap[ni]=[gbutton,gbshadow];
+			let gbfilter=new PIXI.ColorMatrixFilter();
+			gbutton.filters=[gbfilter];
+			if(gbforbidmap[ni])gbfilter.brightness(0.5);
+			core.pointer(gbutton,{
+				up:{
+					over:()=>{
+						Cursor="pointer";
+						if(!gbforbidmap[ni]){
+							gbutton.texture=gbname(gamebuttons[ni],"highlight");
+							core.sound("bleep");
+						}
+					},
+					out:()=>{
+						Cursor=core.cursor;
+						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
+					},
+					up:()=>{
+						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
+					}
+				},down:{
+					down:()=>{
+						gbutton.position.set(1);core.sound("gravebutton");
+					},
+					up:()=>{
+						gbutton.position.set(0);
+						Cursor=core.cursor;
+						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
+						gbeventmap[ni][gbforbidmap[ni]?"forbid":"event"]();
+						//core.optionsmenu(layer,10);
+					},
+					over:()=>{
+						gbutton.position.set(1);Cursor="pointer";
+						if(!gbforbidmap[ni])core.sound("bleep");
+					},
+					out:()=>{
+						gbutton.position.set(0);Cursor=core.cursor;
+					}
+	
+				}
+			});
+
+			gbspmap[ni]=[gbcr,gbutton,gbshadow,gbfilter];
 		}
 	}
 
