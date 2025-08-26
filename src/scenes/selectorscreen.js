@@ -1,6 +1,6 @@
 (()=>{
 
-	const {Sprite,Container,Rectangle} = PIXI;
+	const {Sprite,Container,Rectangle,Polygon} = PIXI;
 
 	
 	core.selectorscreen=function(){
@@ -67,7 +67,7 @@
 			{
 				parent:ssgroup,
 				zIndex:1,anchor:1,
-				pos:[800,600]
+				pos:[800+1,600+1]
 			}
 		);
 
@@ -120,7 +120,7 @@
 			{
 				parent:ssgroup,
 				zIndex:6,
-				pos:[564,489],
+				pos:[565,490],
 				interactive:true
 			}
 		);
@@ -133,18 +133,18 @@
 				up:()=>{buttonoptions.texture=bopimg[0];}
 			},down:{
 				down:()=>{
-					buttonoptions.position.set(564+1,489+1);core.sound("tap");
+					buttonoptions.position.set(565+1,490+1);core.sound("tap");
 				},
 				up:()=>{
-					buttonoptions.position.set(564,489);
+					buttonoptions.position.set(565,490);
 					Cursor=core.cursor;buttonoptions.texture=bopimg[0];
 					core.optionsmenu(layer,10);
 				},
 				over:()=>{
-					buttonoptions.position.set(564+1,489+1);Cursor="pointer";core.sound("bleep");
+					buttonoptions.position.set(565+1,490+1);Cursor="pointer";core.sound("bleep");
 				},
 				out:()=>{
-					buttonoptions.position.set(564,489);Cursor=core.cursor;
+					buttonoptions.position.set(565,490);Cursor=core.cursor;
 				}
 
 			}
@@ -299,6 +299,12 @@
 			[[405,65],[406,173],[410,257],[413,328]],
 			[[398,66],[407,177],[411,260],[412,330]]
 		];
+		let gbhitareamap=[
+			new Polygon([[9,32],[66,28],[81,4],[228,6],[246,41],[326,56],[317,140],[1,98]].flat()),
+			new Polygon([[5,5],[310,51],[293,125],[8,73]].flat()),
+			new Polygon([[5,3],[279,56],[267,118],[5,59]].flat()),
+			new Polygon([[8,1],[264,59],[249,118],[7,55]].flat()),
+		];
 		let gbspmap=[];
 
 		let startad=true;
@@ -350,7 +356,8 @@
 				new Sprite(gbname(gamebuttons[ni],"button")),
 				{
 					parent:gbcr,
-					interactive:true
+					interactive:true,
+					hitArea:gbhitareamap[ni]
 				}
 			);
 			let gbshadow=core.set(
@@ -389,7 +396,6 @@
 						Cursor=core.cursor;
 						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
 						gbeventmap[ni][gbforbidmap[ni]?"forbid":"event"]();
-						//core.optionsmenu(layer,10);
 					},
 					over:()=>{
 						gbutton.position.set(1);Cursor="pointer";

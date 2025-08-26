@@ -317,6 +317,7 @@
 	 */
 	core.set = function (element, object) {
 		const special = ["pos", "position", "scale", "skew", "anchor", "pivot", "size", "parent"];
+		let anchor=null;
 		for (let name in object) {
 			if (special.includes(name)) {
 				switch (name) {
@@ -330,6 +331,9 @@
 						if (!object[name]) break;
 						object[name].addChild(element);
 						break;
+					case "anchor":
+						anchor=core.packset(object[name]);
+						break;
 					default:
 						element[name].set(...core.packset(object[name]));
 				}
@@ -337,8 +341,12 @@
 				element[name] = object[name];
 			}
 		}
+		if(anchor)core.anchor(element,anchor);
 		return element;
 	}
+	core.anchor=(ele,ac)=>{
+		ele.pivot.set(Math.round(ac[0]*ele.width),Math.round(ac[1]*ele.height));
+	};
 	//保留num的小数点后pow位
 	core.fixed = function (num, pow = 3) {
 		return Math.round(num * (10 ** pow)) / (10 ** pow);
@@ -360,7 +368,6 @@
 	}
 	//使输出的数限定在min和max中间，过低取min，过高取max
 	core.between = function (min, max, num) {
-		;
 		return Math.max(min, Math.min(num, max));
 	}
 	core.setDrag = function (ele, layer) {
@@ -613,6 +620,6 @@
 				// 播放
 				sourceNode.start();
 			});
-	}
+	};
 
 })();

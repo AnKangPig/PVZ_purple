@@ -95,6 +95,17 @@
 		tl.to(pop, { alpha: 1, duration: 0.33 }, 0.67);
 		tl.to(pop, { alpha: 0, duration: 0.5 }, 2);
 
+		/*app.view.addEventListener("pointerdown",e=>{
+			let x=(e.offsetX+0.5),y=(e.offsetY+0.5);
+			const point = core.set(
+				new Sprite(img["PotatoMine_rock1"]),
+				{
+					parent: app.stage,
+					pos: [x,y],scale:0.5
+				}
+			);
+			console.log("["+(e.offsetX+0.5)+","+(e.offsetY+0.5)+"]");
+		});*/
 	}
 
 })();
