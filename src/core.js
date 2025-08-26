@@ -111,7 +111,7 @@
 			//无timeline用setTimeout，time为0则直接执行
 			if (time === 0) core._real_sound(name);
 			window.setTimeout(() => { core._real_sound(name); }, time);
-		} else timeline.add(() => { core._real_sound(name) }, time);
+		} else timeline.add(() => { core._real_sound(name) }, time/1000);
 		//有timeline则绑timeline上
 	}
 

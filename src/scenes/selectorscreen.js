@@ -93,24 +93,24 @@
 		
 		//底下的叶子
 		const ssleaves=core.animate(core.ani["ssleaves"],ssgroup);
-		ssleaves.cr.zIndex=2;ssleaves.repeat=-1;
+		ssleaves.cr.zIndex=6;ssleaves.repeat=-1;
 		ssleaves.play();
 
 		//1~2倍变速（变调）
 		let flowerpop=()=>core.pitchedsound("limbs_pop",core.fixed(core.random(1,2),2));
 		//右下角能被点掉的三朵小花（彩蛋）
 		const flowerA=core.animate(core.ani["ssf1"],ssgroup);
-		flowerA.cr.zIndex=8;flowerA.frf();
+		flowerA.cr.zIndex=5;flowerA.frf();
 		flowerA.cr.interactive=true;
 		flowerA.cr.addEventListener("pointerdown",()=>{flowerpop();flowerA.play();},{once:true});
 
 		const flowerB=core.animate(core.ani["ssf2"],ssgroup);
-		flowerB.cr.zIndex=8;flowerB.frf();
+		flowerB.cr.zIndex=5;flowerB.frf();
 		flowerB.cr.interactive=true;
 		flowerB.cr.addEventListener("pointerdown",()=>{flowerpop();flowerB.play();},{once:true});
 
 		const flowerC=core.animate(core.ani["ssf3"],ssgroup);
-		flowerC.cr.zIndex=8;flowerC.frf();
+		flowerC.cr.zIndex=5;flowerC.frf();
 		flowerC.cr.interactive=true;
 		flowerC.cr.addEventListener("pointerdown",()=>{flowerpop();flowerC.play();},{once:true});
 
@@ -119,7 +119,7 @@
 			new Sprite(img["SelectorScreen_Options1"]),
 			{
 				parent:ssgroup,
-				zIndex:6,
+				zIndex:4,
 				pos:[565,490],
 				interactive:true
 			}
@@ -155,7 +155,7 @@
 			new Sprite(img["SelectorScreen_Help1"]),
 			{
 				parent:ssgroup,
-				zIndex:6,
+				zIndex:4,
 				pos:[647,529],
 				interactive:true
 			}
@@ -208,7 +208,7 @@
 			new Sprite(img["SelectorScreen_Quit1"]),
 			{
 				parent:ssgroup,
-				zIndex:6,
+				zIndex:4,
 				pos:[720,515],
 				interactive:true
 			}
@@ -311,7 +311,21 @@
 		gbeventmap=[
 			{
 				event:()=>{
-					gbdialog("abc");
+					let hand=core.animate(core.ani["zomhand"],ssgroup);
+					hand.cr.zIndex=5;hand.play();
+					core.BEdown=true;
+					let glimmer=gsap.timeline({repeat:-1});
+					core.timelines.push(glimmer);let gl=false;
+					glimmer.add(()=>{gbspmap[0][3].brightness(gl?1:0.5);gl=!gl;},0.1);
+
+					let stl=gsap.timeline();
+					core.timelines.push(stl);
+					core.sound("losemusic",0,stl);
+					core.sound("evillaugh",1333,stl);
+					stl.add(()=>{
+						document.getElementById("gameGroup").remove(); //test
+						core.BEdown=false;
+					},5.1);
 				}
 			},
 			{
@@ -343,7 +357,7 @@
 				new Container(),
 				{
 					parent:ssgroup,
-					zIndex:7,
+					zIndex:4,
 					pos:gbposmap[0][ni]
 				}
 			);
@@ -359,7 +373,7 @@
 				new Sprite(gbname(gamebuttons[ni],"Shadow")),
 				{
 					parent:ssgroup,
-					zIndex:6,
+					zIndex:3,
 					pos:gbposmap[1][ni]
 				}
 			);
