@@ -104,7 +104,7 @@
 					pos: [x,y],scale:0.5
 				}
 			);
-			console.log("["+(e.offsetX+0.5)+","+(e.offsetY+0.5)+"]");
+			console.log("["+x+","+y+"]");
 		});*/
 	}
 

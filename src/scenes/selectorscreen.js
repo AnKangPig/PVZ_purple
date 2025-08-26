@@ -259,6 +259,7 @@
 				}
 			}
 		});
+
 		let gamebuttons=["StartAdventure","Survival","Challenges","Vasebreaker"];
 		let buttontypes=["button","highlight","Shadow"];
 		const gbname=(name,type)=>{
@@ -295,23 +296,17 @@
 				}
 			},layer,10);
 		}
-		let gbposmap=[
-			[[405,65],[406,173],[410,257],[413,328]],
-			[[398,66],[407,177],[411,260],[412,330]]
-		];
+		let gbposmap=[[[405,65],[406,173],[410,257],[413,328]],[[398,66],[407,177],[411,260],[412,330]]];
 		let gbhitareamap=[
-			new Polygon([[9,32],[66,28],[81,4],[228,6],[246,41],[326,56],[317,140],[1,98]].flat()),
-			new Polygon([[5,5],[310,51],[293,125],[8,73]].flat()),
-			new Polygon([[5,3],[279,56],[267,118],[5,59]].flat()),
-			new Polygon([[8,1],[264,59],[249,118],[7,55]].flat()),
+			[[9,32],[66,28],[81,4],[228,6],[246,41],[326,56],[317,140],[1,98]],[[5,5],[310,51],[293,125],[8,73]],
+			[[5,3],[279,56],[267,118],[5,59]],[[8,1],[264,59],[249,118],[7,55]],
 		];
 		let gbspmap=[];
 
 		let startad=true;
 		if(!startad){
-			gamebuttons[0]="Adventure";
-			gbposmap[0][0]=[405,79];
-			gbposmap[1][0]=[406,80];
+			gamebuttons[0]="Adventure";gbposmap[0][0]=[405,79];gbposmap[1][0]=[406,80];
+			gbhitareamap[0]=[[8,4],[324,32],[316,114],[207,101],[196,113],[103,101],[90,83],[3,72]];
 		}
 		gbeventmap=[
 			{
@@ -357,7 +352,7 @@
 				{
 					parent:gbcr,
 					interactive:true,
-					hitArea:gbhitareamap[ni]
+					hitArea:new Polygon(gbhitareamap[ni].flat())
 				}
 			);
 			let gbshadow=core.set(
