@@ -302,6 +302,7 @@
 			if (name.toUpperCase() === str) return name;
 		}
 		//若无，则全部小写（运行到这里可以视为异常）
+		console.log("REMstring发生错误");
 		return str.toLowerCase();
 	}
 	core.packset = function (inp) {
@@ -621,5 +622,19 @@
 				sourceNode.start();
 			});
 	};
-
+	core.wall=(zIndex,parent)=>{
+		//阻止鼠标事件
+		let cr=core.set(
+			new Container(),
+			{
+				zIndex,parent,interactive:true,
+				hitArea:new PIXI.Rectangle(0,0,800,600)
+			}
+		);
+		let nodo=e=>{e.stopPropagation();};
+		for(let action of ["down","up","out","over","upoutside"]){
+			cr.on("pointer"+action,nodo);
+		}
+		return cr;
+	}
 })();

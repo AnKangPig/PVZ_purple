@@ -313,18 +313,21 @@
 				event:()=>{
 					let hand=core.animate(core.ani["zomhand"],ssgroup);
 					hand.cr.zIndex=5;hand.play();
-					core.BEdown=true;
+					core.wall(20,layer);
 					let glimmer=gsap.timeline({repeat:-1});
 					core.timelines.push(glimmer);let gl=false;
 					glimmer.add(()=>{gbspmap[0][3].brightness(gl?1:0.5);gl=!gl;},0.1);
 
 					let stl=gsap.timeline();
 					core.timelines.push(stl);
+					core.bgm.stop();
 					core.sound("losemusic",0,stl);
 					core.sound("evillaugh",1333,stl);
 					stl.add(()=>{
-						document.getElementById("gameGroup").remove(); //test
-						core.BEdown=false;
+						//document.getElementById("gameGroup").remove(); //test
+						core.killTimelines();
+						layer.destroy();
+						core.gamescreen();
 					},5.1);
 				}
 			},

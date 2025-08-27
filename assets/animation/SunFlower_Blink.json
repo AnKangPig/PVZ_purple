@@ -1,0 +1,29 @@
+{
+    "fps":12,
+    "tracks":[
+        {
+            "name":"anim_blink",
+            "transforms":[
+                {
+                    "f":-1
+                },
+                {
+                    "x":27.1,
+                    "y":25.1,
+                    "sx":0.8,
+                    "sy":0.8,
+                    "f":0,
+                    "i":"IMAGE_REANIM_SUNFLOWER_BLINK2"
+                },
+                {
+                    "y":25.3,
+                    "i":"IMAGE_REANIM_SUNFLOWER_BLINK1"
+                },
+                {
+                    "y":25.1,
+                    "i":"IMAGE_REANIM_SUNFLOWER_BLINK2"
+                }
+            ]
+        }
+    ]
+}

@@ -16,6 +16,7 @@
 		"scenes/startscreen",
 		"scenes/selectorscreen",
 		"scenes/zombienote",
+		"scenes/gamescreen",
 		"widgets/dialog",
 		"widgets/optionsmenu",
 	];
@@ -39,7 +40,9 @@
 		["SelectorScreen_Cloud4", "ssc4"],
 		["SelectorScreen_Cloud5", "ssc5"],
 		["SelectorScreen_Cloud6", "ssc6"],
-		["SelectorScreen_Cloud7", "ssc7"]
+		["SelectorScreen_Cloud7", "ssc7"],
+		["SunFlower", "sunflower"],
+		["SunFlower_Blink", "sfblink"]
 	];
 
 
