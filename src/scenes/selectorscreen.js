@@ -324,7 +324,6 @@
 					core.sound("losemusic",0,stl);
 					core.sound("evillaugh",1333,stl);
 					stl.add(()=>{
-						//document.getElementById("gameGroup").remove(); //test
 						core.killTimelines();
 						layer.destroy();
 						core.gamescreen();
