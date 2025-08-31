@@ -1,0 +1,30 @@
+{
+    "fps":12,
+    "tracks":[
+        {
+            "name":"anim_blink_twitch",
+            "transforms":[
+                {
+                    "x":29.2,
+                    "y":35.6,
+                    "i":"IMAGE_REANIM_WALLNUT_TWITCH"
+                },
+                {
+                    "y":34.2
+                },
+                {
+                    "y":35.6
+                },
+                {
+                    "y":34.2
+                },
+                {
+                    "y":35.6
+                },
+                {
+                    "f":-1
+                }
+            ]
+        }
+    ]
+}

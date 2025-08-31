@@ -1,0 +1,26 @@
+{
+    "fps":12,
+    "tracks":[
+        {
+            "name":"anim_blink",
+            "transforms":[
+                {
+                    "x":28,
+                    "y":21.6,
+                    "i":"IMAGE_REANIM_WALLNUT_BLINK1"
+                },
+                {
+                    "y":21.8,
+                    "i":"IMAGE_REANIM_WALLNUT_BLINK2"
+                },
+                {
+                    "y":21.6,
+                    "i":"IMAGE_REANIM_WALLNUT_BLINK1"
+                },
+                {
+                    "f":-1
+                }
+            ]
+        }
+    ]
+}

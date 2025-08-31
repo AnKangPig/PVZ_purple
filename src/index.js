@@ -42,7 +42,10 @@
 		["SelectorScreen_Cloud6", "ssc6"],
 		["SelectorScreen_Cloud7", "ssc7"],
 		["SunFlower", "sunflower"],
-		["SunFlower_Blink", "sfblink"]
+		["SunFlower_Blink", "sfblink"],
+		["Wallnut", "wnut"],
+		["Wallnut_Twitch","wntwitch"],
+		["Wallnut_Blink","wnblink"]
 	];
 
 

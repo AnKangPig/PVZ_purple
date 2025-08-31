@@ -283,13 +283,6 @@
 		return cnow;
 	}
 
-	core.timelines = [];
-	core.killTimelines = function () {
-		while (core.timelines.length !== 0) {
-			core.timelines.shift().kill();
-		}
-	}
-
 	/**
 	 * 将animate中的默认格式转为正常名称
 	 * @param {string} inp 输入字符串
@@ -306,6 +299,14 @@
 		console.log("REMstring发生错误");
 		return str.toLowerCase();
 	}
+	
+	core.timelines = [];
+	core.killTimelines = function () {
+		while (core.timelines.length !== 0) {
+			core.timelines.shift().kill();
+		}
+	}
+
 	core.packset = function (inp) {
 		if (Array.isArray(inp)) {
 			return inp;
