@@ -393,7 +393,7 @@
 				Cursor = core.cursor;
 				con.off('pointerup', cancel);
 				con.off('pointerupoutside', cancel);
-				core.app.view.removeEventListener('blur', cancel);
+				core.app.canvas.removeEventListener('blur', cancel);
 				con.off('pointermove', move);
 			};
 			// 鼠标移动事件（拖动中）
@@ -412,7 +412,7 @@
 			};
 			con.on('pointerup', cancel, { once: true });
 			con.on('pointerupoutside', cancel, { once: true });
-			core.app.view.addEventListener('blur', cancel, { once: true });
+			core.app.canvas.addEventListener('blur', cancel, { once: true });
 			con.on('pointermove', move);
 		});
 	};
@@ -573,7 +573,7 @@
 				}
 				con.off('pointerup', finish);
 				con.off('pointerupoutside', finish);
-				core.app.view.removeEventListener('blur', finish);
+				core.app.canvas.removeEventListener('blur', finish);
 				con.off('pointermove', move);
 			};
 			// 鼠标移动事件（拖动中）
@@ -586,7 +586,7 @@
 			};
 			con.on('pointerup', finish, { once: true });
 			con.on('pointerupoutside', finish, { once: true });
-			core.app.view.addEventListener('blur', finish, { once: true });
+			core.app.canvas.addEventListener('blur', finish, { once: true });
 			con.on('pointermove', move);
 		});
 	};

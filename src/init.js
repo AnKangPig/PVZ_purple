@@ -13,47 +13,57 @@
 		//////////////////////////////////////////////////////////////////
 
 		gsap.registerPlugin(PixiPlugin);
+		//none为线性缓动
+		gsap.defaults({ ease: "none" });
+		await waitForBgmStart(bgm,forceclickbegin);
+		//将鼠标指针设置为core.cursor（游戏默认指针）
+		Cursor = core.cursor;
+		const app = await createPixiApp();
+		setupResize();
+		loadVolumes();
+		prepare(app);
+		markpoints(app);
+	}
+	async function waitForBgmStart(bgm,forceclickbegin){
 		const loading = document.getElementById("loading");
 		const bgmd = document.getElementById("bgm");
 		bgmd.src = "./assets/music/" + bgm;
-		const clickbegin = () => {
-			return new Promise(resolve => {
-				document.documentElement.style.setProperty("--load", "''");
-				loading.innerHTML = "&emsp;加载完成<br>请点击以开始";
-				const fun = core.once(function () {
-					core.bgm.play(bgm); resolve();
-				});
-				const body = document.getElementsByTagName("body")[0];
-				//用mousedown才能触发interact,pointerdown不行
-				body.addEventListener("mousedown", fun, { once: true });
-				body.addEventListener("keydown", fun, { once: true });
-			});
-		}
+		let forced=false;
 		await bgmd.play().catch(e => {
-			if (e.name === "NotAllowedError" && (!forceclickbegin)) return clickbegin();
+			if (e.name === "NotAllowedError")forced=true;
 		}).finally(() => {
-			if (forceclickbegin) {
+			if (forced || forceclickbegin) {
 				bgmd.pause();
-				return clickbegin();
+				return clickbegin(loading,bgm);
 			}
 		});
 		loading.remove();
-		//将鼠标指针设置为core.cursor（游戏默认指针）
-		Cursor = core.cursor;
-
+	}
+	function clickbegin(loading,bgm) {
+		return new Promise(resolve => {
+			document.documentElement.style.setProperty("--load", "''");
+			loading.innerHTML = "&emsp;加载完成<br>请点击以开始";
+			const fun = core.once(function () {
+				core.bgm.play(bgm); resolve();
+			});
+			const body = document.getElementsByTagName("body")[0];
+			//用mousedown才能触发interact,pointerdown不行
+			body.addEventListener("mousedown", fun, { once: true });
+			body.addEventListener("keydown", fun, { once: true });
+		});
+	}
+	async function createPixiApp(){
 		const app = new PIXI.Application();
 		//游戏一定为800*600，在此基础上拉伸
 		await app.init({ width: 800, height: 600 });
 		core.app = app; core.gdom.appendChild(app.canvas);
 		//取消右键菜单
-		app.view.addEventListener('contextmenu', (e) => {
+		app.canvas.addEventListener('contextmenu', (e) => {
 			e.preventDefault();
 		});
-
-		if (navigator.userAgent.includes("Electron") && localStorage.getItem("full") !== "true") {
-			localStorage.setItem("full", true);
-		}
-
+		return app;
+	}
+	function setupResize(){
 		//调整大小函数
 		core.resize = () => {
 			//全屏模式或屏幕过小就拉满，否则维持800*600
@@ -62,20 +72,24 @@
 			let width = adapt ? Math.min(window.innerWidth, window.innerHeight * 4 / 3) : 800;
 			document.documentElement.style.setProperty("--width", width + "px");
 		};
+
+		if (navigator.userAgent.includes("Electron") && localStorage.getItem("full") !== "true") {
+			localStorage.setItem("full", true);
+		}
+
 		window.addEventListener('resize', core.resize);
 		document.addEventListener('fullscreenchange', core.resize);
 		core.resize();
-		//none为线性缓动
-		gsap.defaults({ ease: "none" });
-
-
+	}
+	function loadVolumes(){
 		let bgmvolume = localStorage.getItem("BGM_Volume");
 		if (bgmvolume === null) { localStorage.setItem("BGM_Volume", 1); bgmvolume = 1; }
 		core.bgm.audio.volume = Number(bgmvolume) * core.soundlist.factor;
 		let soundvolume = localStorage.getItem("Sound_Volume");
 		if (soundvolume === null) { localStorage.setItem("Sound_Volume", 1); soundvolume = 1; }
 		core.soundlist.volume = Number(soundvolume) * core.soundlist.factor;
-
+	}
+	function prepare(app){
 		const tl = gsap.timeline({
 			onComplete: () => {
 				core.killTimelines();
@@ -94,8 +108,9 @@
 		);
 		tl.to(pop, { alpha: 1, duration: 0.33 }, 0.67);
 		tl.to(pop, { alpha: 0, duration: 0.5 }, 2);
-
-		/*app.view.addEventListener("pointerdown",e=>{
+	}
+	function markpoints(app){
+		app.canvas.addEventListener("pointerdown",e=>{
 			let x=(e.offsetX+0.5),y=(e.offsetY+0.5);
 			const point = core.set(
 				new Sprite(img["PotatoMine_rock1"]),
@@ -105,8 +120,7 @@
 				}
 			);
 			console.log("["+x+","+y+"]");
-		});*/
+		});
 	}
-
 })();
 

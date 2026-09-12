@@ -73,25 +73,25 @@
 		document.documentElement.style.setProperty("--load", "'" + t + "'");
 	};
 	//加载js文件
-	let ljs = (js, r) => {
+	let ljs = (js, resolve) => {
 		let script = document.createElement('script');
 		let src = "./src/" + js + ".js";
 		if (js.startsWith("lib:")) {
 			src = js.replace(/^lib:/, "");
 		}
 		script.src = src;
-		script.onload = r;
+		script.onload = resolve;
 		document.head.appendChild(script);
 	}
 	//加载字体
-	let lf = (name, ff, r) => {
+	let lf = (name, ff, resolve) => {
 		ff.load().then(font => {
 			document.fonts.add(font);
 			if (name === setting.LoadingFont) {
 				//遇到“加载字体"就将图片撤去
 				document.documentElement.style.setProperty("--ldimg", "none");
 				loadtext("正在加载字体");
-			} r();
+			} resolve();
 		});
 	}
 
@@ -101,10 +101,10 @@
 		lf(fo[1], Font, r);
 	}
 	//加载中文字体
-	let lcf = (fp, r) => {
-		if (fp.url === "default") { r(); return; }
+	let lcf = (fp, resolve) => {
+		if (fp.url === "default") { resolve(); return; }
 		const Font = new FontFace(fp.name, `url(./assets/font/zh-cn/${fp.url})`);
-		lf(fp.name, Font, r);
+		lf(fp.name, Font, resolve);
 	}
 	//加载动画JSON文件的函数
 	core.aniJSON = async function (name) {
@@ -112,9 +112,9 @@
 		return await response.json();
 	}
 	//加载动画文件
-	let la = (ani, r) => {
+	let la = (ani, resolve) => {
 		core.aniJSON(ani[0]).then(data => {
-			core.ani[ani[1]] = data; r();
+			core.ani[ani[1]] = data; resolve();
 		});
 	}
 
@@ -135,11 +135,11 @@
 
 	for (let i = 0; i < loadEnFont.length; i++) {
 		let f = loadEnFont[i];
-		tasks.f.push(new Promise(r => { lef(f, r); }));
+		tasks.f.push(new Promise(resolve => { lef(f, resolve); }));
 	}
 	for (let i = 0; i < cnfont.items.length; i++) {
 		let f = cnfont.items[i];
-		tasks.f.push(new Promise(r => { lcf(f, r); }));
+		tasks.f.push(new Promise(resolve => { lcf(f, resolve); }));
 	}
 	//同时加载字体文件
 	await Promise.all(tasks.f);
@@ -148,7 +148,7 @@
 	loadtext("正在加载动画文件");
 	for (let i = 0; i < loadanimate.length; i++) {
 		let ani = loadanimate[i];
-		tasks.ani.push(new Promise(r => { la(ani, r); }));
+		tasks.ani.push(new Promise(resolve => { la(ani, resolve); }));
 	}
 	//同时加载动画文件
 	await Promise.all(tasks.ani);
