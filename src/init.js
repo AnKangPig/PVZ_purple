@@ -22,7 +22,7 @@
 		setupResize();
 		loadVolumes();
 		prepare(app);
-		markpoints(app);
+		//markpoints(app);
 	}
 	async function waitForBgmStart(bgm,forceclickbegin){
 		const loading = document.getElementById("loading");
@@ -89,6 +89,19 @@
 		if (soundvolume === null) { localStorage.setItem("Sound_Volume", 1); soundvolume = 1; }
 		core.soundlist.volume = Number(soundvolume) * core.soundlist.factor;
 	}
+	function markpoints(app){
+		app.canvas.addEventListener("pointerdown",e=>{
+			let x=(e.offsetX+0.5),y=(e.offsetY+0.5);
+			const point = core.set(
+				new Sprite(img["PotatoMine_rock1"]),
+				{
+					parent: app.stage,
+					pos: [x,y],scale:0.5
+				}
+			);
+			console.log("["+x+","+y+"]");
+		});
+	}
 	function prepare(app){
 		const tl = gsap.timeline({
 			onComplete: () => {
@@ -108,19 +121,6 @@
 		);
 		tl.to(pop, { alpha: 1, duration: 0.33 }, 0.67);
 		tl.to(pop, { alpha: 0, duration: 0.5 }, 2);
-	}
-	function markpoints(app){
-		app.canvas.addEventListener("pointerdown",e=>{
-			let x=(e.offsetX+0.5),y=(e.offsetY+0.5);
-			const point = core.set(
-				new Sprite(img["PotatoMine_rock1"]),
-				{
-					parent: app.stage,
-					pos: [x,y],scale:0.5
-				}
-			);
-			console.log("["+x+","+y+"]");
-		});
 	}
 })();
 
