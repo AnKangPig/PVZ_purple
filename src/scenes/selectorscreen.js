@@ -2,7 +2,27 @@
 
 	const {Sprite,Container,Rectangle,Polygon} = PIXI;
 
-	
+	const MAP = {
+		buttons: ["StartAdventure", "Survival", "Challenges", "Vasebreaker"],
+		pos: [[[405,65],[406,173],[410,257],[413,328]],[[398,66],[407,177],[411,260],[412,330]]],
+		hitArea: [
+			[[9,32],[66,28],[81,4],[228,6],[246,41],[326,56],[317,140],[1,98]],[[5,5],[310,51],[293,125],[8,73]],
+			[[5,3],[279,56],[267,118],[5,59]],[[8,1],[264,59],[249,118],[7,55]],
+		],
+		nameMap: {
+			button:{
+				StartAdventure:"StartAdventure_Button1"//大写B，多1
+			},
+			highlight:{
+				StartAdventure:"StartAdventure_Highlight",//大写H
+				Vasebreaker:"vasebreaker_highlight"//小写v
+			},
+			Shadow:{
+				Challenges:"Challenge",//无s
+				Vasebreaker:"ZenGarden"//ZenGarden！
+			}
+		},
+	};
 	core.selectorscreen=function(){
 
 		const sanoshadow=false;//是否启用一个渲染bug，切存档会导致第一个按钮阴影消失
@@ -114,170 +134,29 @@
 		flowerC.cr.interactive=true;
 		flowerC.cr.addEventListener("pointerdown",()=>{flowerpop();flowerC.play();},{once:true});
 
-		//选项
-		const buttonoptions=core.set(
-			new Sprite(img["SelectorScreen_Options1"]),
-			{
-				parent:ssgroup,
-				zIndex:4,
-				pos:[565,490],
-				interactive:true
-			}
-		);
-		const bopimg=[img["SelectorScreen_Options1"],img["SelectorScreen_Options2"]];
-
-		core.pointer(buttonoptions,{
-			up:{
-				over:()=>{Cursor="pointer";buttonoptions.texture=bopimg[1];core.sound("bleep");},
-				out:()=>{Cursor=core.cursor;buttonoptions.texture=bopimg[0];},
-				up:()=>{buttonoptions.texture=bopimg[0];}
-			},down:{
-				down:()=>{
-					buttonoptions.position.set(565+1,490+1);core.sound("tap");
-				},
-				up:()=>{
-					buttonoptions.position.set(565,490);
-					Cursor=core.cursor;buttonoptions.texture=bopimg[0];
-					core.optionsmenu(layer,10);
-				},
-				over:()=>{
-					buttonoptions.position.set(565+1,490+1);Cursor="pointer";core.sound("bleep");
-				},
-				out:()=>{
-					buttonoptions.position.set(565,490);Cursor=core.cursor;
-				}
-
-			}
+		createCornerButton(ssgroup, {
+			pos: [565, 490],
+			normal: img["SelectorScreen_Options1"],
+			pressed: img["SelectorScreen_Options2"],
+			onClick: () => core.optionsmenu(layer, 10),
 		});
-
-		//帮助
-		const buttonhelp=core.set(
-			new Sprite(img["SelectorScreen_Help1"]),
-			{
-				parent:ssgroup,
-				zIndex:4,
-				pos:[647,529],
-				interactive:true
-			}
-		);
-		const bhpimg=[img["SelectorScreen_Help1"],img["SelectorScreen_Help2"]];
-
-		core.pointer(buttonhelp,{
-			up:{
-				over:()=>{Cursor="pointer";buttonhelp.texture=bhpimg[1];core.sound("bleep");},
-				out:()=>{Cursor=core.cursor;buttonhelp.texture=bhpimg[0];},
-				up:()=>{buttonhelp.texture=bhpimg[0];}
-			},down:{
-				down:()=>{
-					buttonhelp.position.set(647+1,529+1);core.sound("tap");
-				},
-				up:()=>{
-					buttonhelp.position.set(647,529);
-					Cursor=core.cursor;buttonhelp.texture=bhpimg[0];
-					core.killTimelines()
-					layer.destroy();
-					core.bgm.stop();
-					core.zombienote({
-						note:"ZombieNoteHelp",
-						notepos:[131,132],
-						button:{
-							first:{
-								text:"主菜单",
-								event:(zlayer)=>{
-									core.killTimelines()
-									zlayer.destroy();
-									core.bgm.play("CrazyDave");
-									core.selectorscreen();
-								}
-							}
-						}
-					});
-				},
-				over:()=>{
-					buttonhelp.position.set(647+1,529+1);Cursor="pointer";core.sound("bleep");
-				},
-				out:()=>{
-					buttonhelp.position.set(647,529);Cursor=core.cursor;
-				}
-
-			}
+		createCornerButton(ssgroup, {
+			pos: [647, 529],
+			normal: img["SelectorScreen_Help1"],
+			pressed: img["SelectorScreen_Help2"],
+			onClick: () => openHelp(layer),
 		});
-
-		//退出（web某些情况下无法真退）
-		const buttonquit=core.set(
-			new Sprite(img["SelectorScreen_Quit1"]),
-			{
-				parent:ssgroup,
-				zIndex:4,
-				pos:[720,515],
-				interactive:true
-			}
-		);
-		const bqtimg=[img["SelectorScreen_Quit1"],img["SelectorScreen_Quit2"]];
-		
-		core.pointer(buttonquit,{
-			up:{
-				over:()=>{Cursor="pointer";buttonquit.texture=bqtimg[1];core.sound("bleep");},
-				out:()=>{Cursor=core.cursor;buttonquit.texture=bqtimg[0];},
-				up:()=>{buttonquit.texture=bqtimg[0];}
-			},down:{
-				down:()=>{
-					buttonquit.position.set(720+1,515+1);core.sound("tap");
-				},
-				up:()=>{
-					buttonquit.position.set(720,515);
-					Cursor=core.cursor;buttonquit.texture=bqtimg[0];
-					core.dialog({
-						title:"退出",
-						text:["确定要退出游戏吗？"],
-						button:{
-							first:{
-								text:"退出游戏",
-								event:()=>{
-									window.close();
-									window.setTimeout(()=>{
-										//能够执行到这里说明关闭未成功，那就把界面删除吧，就当是关了
-										alert("若想关闭，请手动关闭！");
-										document.getElementById("gameGroup").remove();
-									},4);
-								}
-							},
-							second:{
-								text:"取消",
-								event:(slayer)=>{
-									slayer.destroy();
-								}
-							}
-						}
-					},layer,10);
-				},
-				over:()=>{
-					buttonquit.position.set(720+1,515+1);Cursor="pointer";core.sound("bleep");
-				},
-				out:()=>{
-					buttonquit.position.set(720,515);Cursor=core.cursor;
-				}
-			}
+		//web某些情况下无法真退
+		createCornerButton(ssgroup, {
+			pos: [720, 515],
+			normal: img["SelectorScreen_Quit1"],
+			pressed: img["SelectorScreen_Quit2"],
+			onClick: () => openQuit(layer),
 		});
-
-		let gamebuttons=["StartAdventure","Survival","Challenges","Vasebreaker"];
-		let buttontypes=["button","highlight","Shadow"];
+		//let buttontypes=["button","highlight","Shadow"];
 		const gbname=(name,type)=>{
-			const map={
-				button:{
-					StartAdventure:"StartAdventure_Button1"//大写B，多1
-				},
-				highlight:{
-					StartAdventure:"StartAdventure_Highlight",//大写H
-					Vasebreaker:"vasebreaker_highlight"//小写v
-				},
-				Shadow:{
-					Challenges:"Challenge",//无s
-					Vasebreaker:"ZenGarden"//ZenGarden！
-				}
-			}
 			const shadow=(type==="Shadow");
-			let ft="SelectorScreen_",lt=map[type][name];
+			let ft="SelectorScreen_",lt=MAP.nameMap[type][name];
 			if(shadow)ft+="Shadow_";
 			if(!lt){lt=name;if(!shadow)lt+="_"+type;}
 			return img[ft+lt];
@@ -296,39 +175,16 @@
 				}
 			},layer,10);
 		}
-		let gbposmap=[[[405,65],[406,173],[410,257],[413,328]],[[398,66],[407,177],[411,260],[412,330]]];
-		let gbhitareamap=[
-			[[9,32],[66,28],[81,4],[228,6],[246,41],[326,56],[317,140],[1,98]],[[5,5],[310,51],[293,125],[8,73]],
-			[[5,3],[279,56],[267,118],[5,59]],[[8,1],[264,59],[249,118],[7,55]],
-		];
 		let gbspmap=[];
 
 		let startad=true;
 		if(!startad){
-			gamebuttons[0]="Adventure";gbposmap[0][0]=[405,79];gbposmap[1][0]=[406,80];
-			gbhitareamap[0]=[[8,4],[324,32],[316,114],[207,101],[196,113],[103,101],[90,83],[3,72]];
+			MAP.buttons[0]="Adventure";MAP.pos[0][0]=[405,79];MAP.pos[1][0]=[406,80];
+			MAP.hitArea[0]=[[8,4],[324,32],[316,114],[207,101],[196,113],[103,101],[90,83],[3,72]];
 		}
-		gbeventmap=[
+		const gbeventmap=[
 			{
-				event:()=>{
-					let hand=core.animate(core.ani["zomhand"],ssgroup);
-					hand.cr.zIndex=5;hand.play();
-					core.wall(20,layer);
-					let glimmer=gsap.timeline({repeat:-1});
-					core.timelines.push(glimmer);let gl=false;
-					glimmer.add(()=>{gbspmap[0][3].brightness(gl?1:0.5);gl=!gl;},0.1);
-
-					let stl=gsap.timeline();
-					core.timelines.push(stl);
-					core.bgm.stop();
-					core.sound("losemusic",0,stl);
-					core.sound("evillaugh",1333,stl);
-					stl.add(()=>{
-						core.killTimelines();
-						layer.destroy();
-						core.gamescreen();
-					},5.1);
-				}
+				event:()=>enterAdventure(layer, ssgroup, gbspmap)
 			},
 			{
 				event:()=>{
@@ -352,7 +208,7 @@
 				},
 			},
 		];
-		gbforbidmap=[false,true,true,true];
+		let gbforbidmap=[false,true,true,true];
 		
 		for(let ni=0;ni<4;ni++){
 			let gbcr=core.set(
@@ -360,23 +216,23 @@
 				{
 					parent:ssgroup,
 					zIndex:4,
-					pos:gbposmap[0][ni]
+					pos:MAP.pos[0][ni]
 				}
 			);
 			let gbutton=core.set(
-				new Sprite(gbname(gamebuttons[ni],"button")),
+				new Sprite(gbname(MAP.buttons[ni],"button")),
 				{
 					parent:gbcr,
 					interactive:true,
-					hitArea:new Polygon(gbhitareamap[ni].flat())
+					hitArea:new Polygon(MAP.hitArea[ni].flat())
 				}
 			);
 			let gbshadow=core.set(
-				new Sprite(gbname(gamebuttons[ni],"Shadow")),
+				new Sprite(gbname(MAP.buttons[ni],"Shadow")),
 				{
 					parent:ssgroup,
 					zIndex:3,
-					pos:gbposmap[1][ni]
+					pos:MAP.pos[1][ni]
 				}
 			);
 			let gbfilter=new PIXI.ColorMatrixFilter();
@@ -387,16 +243,16 @@
 					over:()=>{
 						Cursor="pointer";
 						if(!gbforbidmap[ni]){
-							gbutton.texture=gbname(gamebuttons[ni],"highlight");
+							gbutton.texture=gbname(MAP.buttons[ni],"highlight");
 							core.sound("bleep");
 						}
 					},
 					out:()=>{
 						Cursor=core.cursor;
-						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
+						if(!gbforbidmap[ni])gbutton.texture=gbname(MAP.buttons[ni],"button");
 					},
 					up:()=>{
-						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
+						if(!gbforbidmap[ni])gbutton.texture=gbname(MAP.buttons[ni],"button");
 					}
 				},down:{
 					down:()=>{
@@ -405,7 +261,7 @@
 					up:()=>{
 						gbutton.position.set(0);
 						Cursor=core.cursor;
-						if(!gbforbidmap[ni])gbutton.texture=gbname(gamebuttons[ni],"button");
+						if(!gbforbidmap[ni])gbutton.texture=gbname(MAP.buttons[ni],"button");
 						gbeventmap[ni][gbforbidmap[ni]?"forbid":"event"]();
 					},
 					over:()=>{
@@ -422,7 +278,98 @@
 			gbspmap[ni]=[gbcr,gbutton,gbshadow,gbfilter];
 		}
 	}
-
-
+	function createCornerButton(parent, { pos, normal, pressed, onClick }) {
+		const btn = core.set(new Sprite(normal), {
+			parent, zIndex: 4, pos, interactive: true
+		});
+		const imgs = [normal, pressed];
+	
+		core.pointer(btn, {
+			up: {
+				over: () => { Cursor = "pointer"; btn.texture = imgs[1]; core.sound("bleep"); },
+				out:  () => { Cursor = core.cursor; btn.texture = imgs[0]; },
+				up:   () => { btn.texture = imgs[0]; }
+			},
+			down: {
+				down: () => { btn.position.set(pos[0] + 1, pos[1] + 1); core.sound("tap"); },
+				up:   () => { btn.position.set(pos[0], pos[1]); Cursor = core.cursor; btn.texture = imgs[0]; onClick(); },
+				over: () => { btn.position.set(pos[0] + 1, pos[1] + 1); Cursor = "pointer"; core.sound("bleep"); },
+				out:  () => { btn.position.set(pos[0], pos[1]); Cursor = core.cursor; }
+			}
+		});
+		return btn;
+	}
+	function openHelp(layer){
+		core.killTimelines();
+		layer.destroy();
+		core.bgm.stop();
+		core.zombienote({
+			note:"ZombieNoteHelp",
+			notepos:[131,132],
+			button:{
+				first:{
+					text:"主菜单",
+					event:(zlayer)=>{
+						core.killTimelines()
+						zlayer.destroy();
+						core.bgm.play("CrazyDave");
+						core.selectorscreen();
+					}
+				}
+			}
+		});
+	}
+	function openQuit(layer){
+		core.dialog({
+			title:"退出",
+			text:["确定要退出游戏吗？"],
+			button:{
+				first:{
+					text:"退出游戏",
+					event:()=>{
+						window.close();
+						window.setTimeout(()=>{
+							//能够执行到这里说明关闭未成功，那就把界面删除吧，就当是关了
+							alert("若想关闭，请手动关闭！");
+							document.getElementById("gameGroup").remove();
+						},4);
+					}
+				},
+				second:{
+					text:"取消",
+					event:(slayer)=>{
+						slayer.destroy();
+					}
+				}
+			}
+		},layer,10);
+	}
+	function enterAdventure(layer, ssgroup, gbspmap) {
+		const hand = core.animate(core.ani["zomhand"], ssgroup);
+		hand.cr.zIndex = 5;
+		hand.play();
+	
+		core.wall(20, layer);
+	
+		const glimmer = gsap.timeline({ repeat: -1 });
+		core.timelines.push(glimmer);
+		let gl = false;
+		glimmer.add(() => {
+			gbspmap[0][3].brightness(gl ? 1 : 0.5);
+			gl = !gl;
+		}, 0.1);
+	
+		const stl = gsap.timeline();
+		core.timelines.push(stl);
+		core.bgm.stop();
+		core.sound("losemusic", 0, stl);
+		core.sound("evillaugh", 1333, stl);
+		stl.add(() => {
+			core.killTimelines();
+			layer.destroy();
+			//core.gamescreen();
+			core.selectorscreen();
+		}, 5.1);
+	}
 })();
 

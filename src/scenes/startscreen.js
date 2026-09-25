@@ -52,7 +52,7 @@
 
 		//文字部分
 		const loadtext = core.set(
-			new Text(core.afont("载入中……",'Font3',18,0xd8b721,1.5)),
+			new Text(core.afont("载入中……",'Font3',17.9,0xd8b721,1.5)),
 			{
 				parent:loadbar,
 				anchor:[0.5,1],
@@ -115,25 +115,19 @@
 		tl.to(mask,{pixi:{scaleX:1},duration:1.5},0.963);
 
 		//四朵花+一个僵尸头
-		const sproutA=core.animate(core.ani["sprout"],loadbar);
-		core.set(sproutA.cr,{pos:[-148,-77],zIndex:3});
-		sproutA.delay=1.1;sproutA.play();
-		core.sound("loadingbar_flower",1.17,tl);
-
-		const sproutB=core.animate(core.ani["sprout"],loadbar);
-		core.set(sproutB.cr,{pos:[-79,-77],zIndex:3,scale:[-1,1]});
-		sproutB.delay=1.4;sproutB.play();
-		core.sound("loadingbar_flower",1.47,tl);
-
-		const sproutC=core.animate(core.ani["sprout"],loadbar);
-		core.set(sproutC.cr,{pos:[-12,-83],zIndex:3,scale:[1.32,1.32]});
-		sproutC.delay=1.7;sproutC.play();
-		core.sound("loadingbar_flower",1.77,tl);
-
-		const sproutD=core.animate(core.ani["sprout"],loadbar);
-		core.set(sproutD.cr,{pos:[47,-76],zIndex:3,scale:[-1,1]});
-		sproutD.delay=2;sproutD.play();
-		core.sound("loadingbar_flower",2.07,tl);
+		const sproutParams = [
+			{ pos: [-148, -77], scale: [1, 1],       delay: 1.1, soundAt: 1.17 },
+			{ pos: [ -79, -77], scale: [-1, 1],      delay: 1.4, soundAt: 1.47 },
+			{ pos: [ -12, -83], scale: [1.32, 1.32], delay: 1.7, soundAt: 1.77 },
+			{ pos: [  47, -76], scale: [-1, 1],      delay: 2.0, soundAt: 2.07 },
+		];
+		for (const s of sproutParams) {
+			const sprout = core.animate(core.ani["sprout"], loadbar);
+			core.set(sprout.cr, { pos: s.pos, zIndex: 3, scale: s.scale });
+			sprout.delay = s.delay;
+			sprout.play();
+			core.sound("loadingbar_flower", s.soundAt, tl);
+		}
 
 		const zomhead=core.animate(core.ani["zomhead"],loadbar);
 		core.set(zomhead.cr,{pos:[84,-78],zIndex:3});
