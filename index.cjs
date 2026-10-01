@@ -1,22 +1,17 @@
 const { app, BrowserWindow, Menu } = require("electron");
 
+if (require("electron-squirrel-startup")) {app.quit();process.exit(0);}
+
 const createWindow = () => {
   Menu.setApplicationMenu(null);
   const win = new BrowserWindow({
-    width: 1200,
+    width: app.isPackaged?800:1200,
     height: 600,
     useContentSize: true,
   });
 
-  // win.on("will-resize", (event, newBounds, _) => {
-  //   event.preventDefault();
-  //   const widthFactor = newBounds.width / 800;
-  //   const heightFactor = newBounds.height / 600;
-  //   const factor = Math.min(widthFactor, heightFactor);
-  //   win.setContentSize(Math.ceil(800 * factor), Math.ceil(600 * factor));
-  // });
   win.loadFile("index.html");
-  win.webContents.openDevTools();
+  if (!app.isPackaged)win.webContents.openDevTools();
 };
 
 app.whenReady().then(() => {

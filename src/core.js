@@ -222,7 +222,7 @@
 		for (let i in tlist) {//i为字符串索引
 			let action;
 			[action, last] = core.handleframe(tlist[i], last);
-			//如果alpha存在，则不缓动
+			//如果alpha或texture存在，则不缓动
 			if (action.alpha!==undefined||action.texture!==undefined) action.ease = "steps(1,start)";
 			atl.to(sp, action, ((i === "0") ? 0 : ">"));
 		}

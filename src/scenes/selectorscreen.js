@@ -330,7 +330,7 @@
 						window.close();
 						window.setTimeout(()=>{
 							//能够执行到这里说明关闭未成功，那就把界面删除吧，就当是关了
-							alert("若想关闭，请手动关闭！");
+							alert("因浏览器限制，不能自动关闭！请手动关闭！");
 							document.getElementById("gameGroup").remove();
 						},4);
 					}
