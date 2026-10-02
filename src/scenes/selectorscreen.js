@@ -327,12 +327,18 @@
 				first:{
 					text:"退出游戏",
 					event:()=>{
-						window.close();
-						window.setTimeout(()=>{
-							//能够执行到这里说明关闭未成功，那就把界面删除吧，就当是关了
-							alert("因浏览器限制，不能自动关闭！请手动关闭！");
-							document.getElementById("gameGroup").remove();
-						},4);
+						if(window.Capacitor){
+							let App = window.Capacitor.Plugins.App;
+							App.exitApp();
+						}else{
+							window.close();
+							window.setTimeout(()=>{
+								//能够执行到这里说明关闭未成功，那就把界面删除吧，就当是关了
+								alert("因浏览器限制，不能自动关闭！请手动关闭！");
+								document.getElementById("gameGroup").remove();
+							},4);
+						}
+						
 					}
 				},
 				second:{

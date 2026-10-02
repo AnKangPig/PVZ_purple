@@ -7,7 +7,13 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "postinstall": "node src/overrides.js"
+    "postinstall": "node scripts/overrides.js",
+    "build:www": "node scripts/www.js",
+    "android:patch": "node scripts/android.js",
+    "android:setup": "npx cap add android && npm run android:patch",
+    "android:sync": "npm run build:www && npx cap sync android",
+    "android:build": "cd android && gradlew assembleCommunityRelease",
+    "android:officialbuild": "cd android && gradlew assembleOfficialRelease"
   },
   "author": {
     "name": "AnKangPig",
@@ -28,10 +34,16 @@
     "@electron-forge/maker-rpm": "6.0.0-beta.34",
     "@electron-forge/maker-squirrel": "6.0.0-beta.34",
     "@electron-forge/maker-zip": "6.0.0-beta.34",
+    "@electron-forge/plugin-auto-unpack-natives": "6.0.0-beta.34",
     "electron": "22.3.27",
-    "node-abi": "3.96.0"
+    "node-abi": "3.96.0",
+    "@ionic/utils-subprocess": "2.1.11"
   },
   "dependencies": {
+    "@capacitor/android": "^3.9.0",
+    "@capacitor/app": "^1.1.1",
+    "@capacitor/cli": "^3.9.0",
+    "@capacitor/core": "^3.9.0",
     "electron-squirrel-startup": "1.0.1"
   },
   "overrides": {

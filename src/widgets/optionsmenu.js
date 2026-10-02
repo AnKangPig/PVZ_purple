@@ -154,8 +154,10 @@
 		const updateStatus=()=>{fb.texture=fullco();};
 		document.addEventListener('fullscreenchange',updateStatus);
 
-		if(navigator.userAgent.includes("Electron")){
+		if(core.getPlatform()==="electron"){
 			fcheck.visible=false;fb.x=287;
+		}else if(core.getPlatform()==="mobile"){
+			fcheck.visible=false;fb.visible=false;ftext.visible=false;
 		}
 
 		let mslot=core.set(

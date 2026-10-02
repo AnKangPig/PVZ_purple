@@ -639,4 +639,10 @@
 		}
 		return cr;
 	}
+	core.getPlatform=function(){
+		const ua=navigator.userAgent;
+		if(ua.includes("Electron"))return "electron";
+		if(/Android|iPhone|iPad|iPod|Mobile/i.test(ua))return "mobile";
+		return "web";
+	}
 })();

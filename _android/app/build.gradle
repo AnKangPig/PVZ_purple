@@ -1,0 +1,93 @@
+apply plugin: 'com.android.application'
+import groovy.json.JsonSlurper
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.ankangpig.pvzpurple"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    signingConfigs {
+        community {
+            storeFile file("../../keys/community.keystore")
+            storePassword "community123" // 公钥密码
+            keyAlias "community"
+            keyPassword "community123"
+        }
+        official {
+            storeFile file(System.getenv("OFFICIAL_KEYSTORE") ?: "../../keys/official.keystore")
+            storePassword System.getenv("OFFICIAL_STORE_PASSWORD")
+            keyAlias "official"
+            keyPassword System.getenv("OFFICIAL_KEY_PASSWORD")
+        }
+    }
+
+    def capacitorConfigFile = file("${rootDir}/../capacitor.config.json")
+    def capacitorAppId = "com.ankangpig.pvzpurple"
+
+    if (capacitorConfigFile.exists()) {
+        def json = new JsonSlurper().parseText(capacitorConfigFile.text)
+        if (json.appId) {
+            capacitorAppId = json.appId
+        }
+    }
+
+    def appIdCommunity = project.findProperty("APP_ID_COMMUNITY") ?: capacitorAppId
+    def appIdOfficial = project.findProperty("APP_ID_OFFICIAL") ?: "${capacitorAppId}.official"
+
+    flavorDimensions "signing"
+    productFlavors {
+        community {
+            dimension "signing"
+            applicationId appIdCommunity
+            signingConfig signingConfigs.community
+        }
+        official {
+            dimension "signing"
+            applicationId appIdOfficial
+            signingConfig signingConfigs.official
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

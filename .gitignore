@@ -4,3 +4,14 @@ node_modules/
 
 # Electron Forge
 out/
+
+# Capacitor
+www/
+
+# android 文件夹
+android/
+
+keys/official.keystore
+keys/*.jks
+keys/*.keystore
+!keys/community.keystore

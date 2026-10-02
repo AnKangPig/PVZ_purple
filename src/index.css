@@ -10,8 +10,10 @@ html, body {
     position: absolute;
     box-sizing: border-box;
     background-color: #000;
+    -webkit-user-select: none;
     user-select: none;
     touch-action: none;
+    -webkit-tap-highlight-color: transparent;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

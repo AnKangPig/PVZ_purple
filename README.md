@@ -22,7 +22,11 @@ fs.js（来自mota-js）
 
 ### exe（electron）
 
-参考：[引入 NPM 和 Electron](https://github.com/AnKangPig/PVZ_purple/pull/2)
-目前 Electron 构建已同时支持 **Windows 7** 和 **Windows 10**。  
-由于 Electron 官方已放弃 Windows 7，本项目锁定了特定依赖版本，并在 `overrides.js` 中加入了兼容性补丁。
-详细的兼容性调整说明请参见：[对win7构建的兼容性支持](https://github.com/AnKangPig/PVZ_purple/issues/4)
+目前 Electron 构建已同时支持 **Windows 7** 和 **Windows 10**。 \
+由于 Electron 官方已放弃 Windows 7，本项目锁定了特定依赖版本，并在 `overrides.js` 中加入了兼容性补丁。\
+参考：[Electron及其win7兼容](./docs/Electron.md)
+
+### apk（capacitor）
+
+参考：[android的构建](./docs/Capacitor.md)
+

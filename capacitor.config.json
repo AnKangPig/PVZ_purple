@@ -1,0 +1,6 @@
+{
+  "appId": "com.ankangpig.pvzpurple",
+  "appName": "PvZ Purple",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

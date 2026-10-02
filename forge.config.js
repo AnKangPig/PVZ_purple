@@ -24,5 +24,7 @@ module.exports = {
       config: {},
     },
   ],
-  plugins: [],
+  plugins: [
+    ['@electron-forge/plugin-auto-unpack-natives', {}],
+  ],
 };
