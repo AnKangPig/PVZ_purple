@@ -1,6 +1,6 @@
 本项目尚处于萌芽状态，已经实现了除了木牌（存档）和墓碑（开始游戏）以外的所有部分。
 
-## 使用的项目
+## 外部项目 / 工具
 
 YingFengTingYu大佬的PopStudio_Old（不包含，但animation的json是该工具提供的定义）
 
@@ -13,6 +13,11 @@ PIXI.js
 GSAP
 
 fs.js（来自mota-js）
+
+## 使用的框架 / 运行时
+
+- Electron：桌面端构建，支持 Windows 7 / Windows 10
+- Capacitor：Android APK 构建
 
 ## 部署
 

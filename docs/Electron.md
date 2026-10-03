@@ -127,6 +127,7 @@ Node 13 太老，导致库里用新语法就开始崩。保留 Forge 7 已然不
 于是 AI 给了我一个极老的版本号：`6.0.0-beta.34`。
 
 但是，没有 `plugin-fuses`，全部移除。然后 `plugin-auto-unpack-natives` 崩了。或许是 `forge.config.js` 里对象写法不行了，换成 `new AutoUnpackNativesPlugin({})` 试试。也不行。看来 6.0.0 版本太老，根本没有修的办法，直接删掉这个插件。
+>`plugin-auto-unpack-natives`已加回（2026/10/3）
 
 #### 第二难：node-abi 不认识 Electron 22
 
