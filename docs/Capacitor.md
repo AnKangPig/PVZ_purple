@@ -52,7 +52,7 @@ npm run android:build
 在有Android SDK的前提下，直接在android目录下的终端运行：
 
 ```shell
-sh gradlew assembleCommunityRelease
+./gradlew assembleCommunityRelease
 ```
 
 但本人未在 Linux 实测，如有问题请 issue。
@@ -99,7 +99,23 @@ sdk.dir=D\:\\Android\\android-sdk-windows
 本项目密钥分为两种，公开的社区密钥`community.keystore`和私有的`official.keystore`。`official.keystore`由项目维护者私有持有，不公开。\
 项目以使用前者为主，后者仅作为重视安全的用户的选择。\
 社区密钥apk（后称“标准版”）和官方密钥apk（后称“offi版”）包名不同，不能互相覆盖。\
-设计双密钥的目的：标准版使用公开密钥，任何开发者构建的标准版 APK （包括我的）都能互相覆盖更新，无需卸载重装，增强自由性和灵活度；official 版使用私有密钥，更新链可由维护者控制，安全性强。
+设计双密钥的目的：标准版使用公开密钥，任何开发者构建的标准版 APK （包括我的）都能互相覆盖更新，无需卸载重装，增强自由性和灵活度；offi 版使用私有密钥，更新链可由维护者控制，安全性强。
+
+### 私有密钥构建
+
+如要使用私有密钥构建自己的offi版，请自行生成密钥（别名需为 `official`），放在`keys/official.keystore`。之后在android目录下的终端运行（Windows）：
+
+```bat
+gradlew assembleOfficialRelease -PofficialStorePassword=你的密码 -PofficialKeyPassword=你的密钥密码
+```
+
+或（Linux / macOS）：
+
+```shell
+./gradlew assembleOfficialRelease -PofficialStorePassword=你的密码 -PofficialKeyPassword=你的密钥密码
+```
+
+> 以上命令依赖 `_android/app/build.gradle` 中从 `officialStorePassword` / `officialKeyPassword` 属性读取密码的配置。
 
 ## 关于包名
 默认标准版包名：`com.ankangpig.pvzpurple`\

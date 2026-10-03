@@ -30,10 +30,10 @@ android {
             keyPassword "community123"
         }
         official {
-            storeFile file(System.getenv("OFFICIAL_KEYSTORE") ?: "../../keys/official.keystore")
-            storePassword System.getenv("OFFICIAL_STORE_PASSWORD")
+            storeFile file("../../keys/official.keystore")
+            storePassword project.findProperty("officialStorePassword") ?: ""
             keyAlias "official"
-            keyPassword System.getenv("OFFICIAL_KEY_PASSWORD")
+            keyPassword project.findProperty("officialKeyPassword") ?: ""
         }
     }
 

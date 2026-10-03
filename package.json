@@ -12,8 +12,7 @@
     "android:patch": "node scripts/android.js",
     "android:setup": "npx cap add android && npm run android:patch",
     "android:sync": "npm run build:www && npx cap sync android",
-    "android:build": "cd android && gradlew assembleCommunityRelease",
-    "android:build:official": "cd android && gradlew assembleOfficialRelease"
+    "android:build": "cd android && gradlew assembleCommunityRelease"
   },
   "author": {
     "name": "AnKangPig",
