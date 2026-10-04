@@ -50,6 +50,26 @@
 
 
 	//////////////////////////////////////////////////////////////////
+
+	//处理手机端退出按钮
+	if(window.Capacitor){
+		const App = window.Capacitor.Plugins.App;
+		const Toast = window.Capacitor.Plugins.Toast;
+		let lastBackTime = 0;
+		App.addListener('backButton', function (info) {
+				/*if (confirm('确定退出吗？')) {
+					App.exitApp();
+				}*/
+			    let now = Date.now();
+				if (now - lastBackTime < 2000) {
+					App.exitApp();
+				} else {
+					lastBackTime = now;
+					Toast.show({ text: '再按一次退出' });
+				}
+		});
+	}
+
 	//加载的图片文件（使用core.importImage生成img.ison）
 	const loadimage = await (await fetch('./assets/image/image.json')).json();
 

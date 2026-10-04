@@ -43,6 +43,7 @@
     "@capacitor/android": "^3.9.0",
     "@capacitor/app": "^1.1.1",
     "@capacitor/core": "^3.9.0",
+    "@capacitor/toast": "^1.0.8",
     "electron-squirrel-startup": "1.0.1"
   },
   "overrides": {

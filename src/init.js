@@ -12,14 +12,6 @@
 
 		//////////////////////////////////////////////////////////////////
 
-		if(window.Capacitor){
-			const App = window.Capacitor.Plugins.App;
-			App.addListener('backButton', function (info) {
-				  if (confirm('确定退出吗？')) {
-					App.exitApp();
-				  }
-			});
-		}
 		gsap.registerPlugin(PixiPlugin);
 		//none为线性缓动
 		gsap.defaults({ ease: "none" });
