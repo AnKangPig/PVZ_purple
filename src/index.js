@@ -57,9 +57,6 @@
 		const Toast = window.Capacitor.Plugins.Toast;
 		let lastBackTime = 0;
 		App.addListener('backButton', function (info) {
-				/*if (confirm('确定退出吗？')) {
-					App.exitApp();
-				}*/
 			    let now = Date.now();
 				if (now - lastBackTime < 2000) {
 					App.exitApp();
