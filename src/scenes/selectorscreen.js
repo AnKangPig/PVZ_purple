@@ -369,7 +369,7 @@
 		core.timelines.push(stl);
 		core.bgm.stop();
 		core.sound("losemusic", 0, stl);
-		core.sound("evillaugh", 1333, stl);
+		core.sound("evillaugh", 1.333, stl);
 		stl.add(() => {
 			core.killTimelines();
 			layer.destroy();

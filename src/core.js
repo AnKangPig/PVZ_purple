@@ -110,8 +110,8 @@
 		if (!timeline) {
 			//无timeline用setTimeout，time为0则直接执行
 			if (time === 0) core._real_sound(name);
-			window.setTimeout(() => { core._real_sound(name); }, time);
-		} else timeline.add(() => { core._real_sound(name) }, time/1000);
+			window.setTimeout(() => { core._real_sound(name); }, time*1000);
+		} else timeline.add(() => { core._real_sound(name) }, time);
 		//有timeline则绑timeline上
 	}
 
@@ -126,8 +126,6 @@
 			this.elements = elements;
 			this.timeline = timeline;
 			core.timelines.push(timeline);
-			this.rate = 1;//速率
-			this.repeat = 0;//重复次数，无限用-1
 			this._st = 0;//开始时间（负即为延后开始）
 		}
 		_get(name) {
@@ -161,8 +159,14 @@
 			this.timeline.seek(this._st);
 			this.timeline.play();
 		}
+		get rate() {//速率
+			return this.timeline.timeScale();
+		}
 		set rate(value) {
 			this.timeline.timeScale(value);
+		}
+		get repeat() {//重复次数，无限用-1
+			return this.timeline.repeat();
 		}
 		set repeat(value) {
 			this.timeline.repeat(value);
@@ -219,13 +223,13 @@
 	};
 	core.anitrans = function (tlist, atl, sp) {
 		let last = null;
-		for (let i in tlist) {//i为字符串索引
+		tlist.forEach((trans, i) => {
 			let action;
-			[action, last] = core.handleframe(tlist[i], last);
+			[action, last] = core.handleframe(trans, last);
 			//如果alpha或texture存在，则不缓动
 			if (action.alpha!==undefined||action.texture!==undefined) action.ease = "steps(1,start)";
-			atl.to(sp, action, ((i === "0") ? 0 : ">"));
-		}
+			atl.to(sp, action, ((i===0)?0:">"));
+		});
 	};
 	core.getfrf = function (transforms) {
 		for (let trans of transforms) {
