@@ -187,7 +187,7 @@
 		}
 
 	}
-	core.animate = function (data, parent) {
+	core.animate = function (data, parent,options) {
 		/**
 		 * data一般结构如下：
 		 * 	data={
@@ -203,20 +203,49 @@
 		 * 		]
 		 * }
 		 */
+		
+		/**
+		 * options结构如下：
+		 * options={
+		 * 		listMode:...,// 'whitelist' | 'blacklist' | 'all'
+		 * 		list:[...],
+		 * 		startFrame = null,
+		 * 		endFrame = null
+		 * }
+		 */
 		const fps = data.fps;
 		const cr = new Container();
 		if (parent) parent.addChild(cr);
 		const elements = [];
+		options=options||{};
+		const listMode=options.listMode||"all";
+		const list=options.list||[];
+		//是否不为undefined和null的简写形式
+		const _o = v => (v !== undefined&&v !== null);
+		const start=(_o(options.startFrame))?options.startFrame:0;
+		const end=(_o(options.endFrame))?options.endFrame:data.tracks[0].transforms.length-1;
+		const include=(name)=>{
+			switch(listMode){
+				case "whitelist":
+					return list.includes(name);
+				case "blacklist":
+					return !list.includes(name);
+				default:
+					return true;
+			}
+		}
 		//每一帧时间为1/fps，保证总时间为总帧数/fps。速率则后期通过timeScale调节
 		const atl = gsap.timeline({ paused: true, defaults: { duration: 1 / fps } });
 		for (let t of data.tracks) {
-			let { frf, Aimg } = core.getfrf(t.transforms);
+			if(!include(t.name))continue;
+			const transforms=t.transforms.slice(start,end+1);
+			let { frf, Aimg } = core.getfrf(transforms);
 			let sp = new Sprite(Aimg), name = t.name;
 			//一开始应为隐形状态，待第一帧(默认)alpha会设为1
 			sp.alpha = 0;
 			cr.addChild(sp);
 			//根据transform在atl的时间轴上为sp设置动作
-			core.anitrans(t.transforms, atl, sp);
+			core.anitrans(transforms, atl, sp);
 			elements.push({ name, frf, sp })
 		}
 		return new core.Ani(cr, elements, atl);
