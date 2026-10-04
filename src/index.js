@@ -9,6 +9,7 @@
 	let loadjs = [
 		"thirdparty/fs",
 		"thirdparty/pixi.min",
+		"thirdparty/unsafe-eval.min",
 		"thirdparty/gsap.min",
 		"thirdparty/PixiPlugin.min",
 		"core",

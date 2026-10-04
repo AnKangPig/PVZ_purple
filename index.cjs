@@ -7,7 +7,12 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width: app.isPackaged?800:1200,
     height: 600,
-    useContentSize: true,
+    useContentSize: true, 
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
   });
 
   win.loadFile("index.html");

@@ -5,6 +5,15 @@
 	<meta charset="utf-8">
 	<title>植物大战僵尸</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               worker-src 'self' blob:;
+               style-src 'self' 'unsafe-inline';
+               img-src 'self' data: blob:;
+			   media-src 'self' data: blob:;
+               connect-src 'self' data: blob:;
+               object-src 'none';
+               base-uri 'none';">
 	<link rel="stylesheet" type="text/css" href="./src/index.css">
 	<script src="./src/index.js"></script>
 </head>
