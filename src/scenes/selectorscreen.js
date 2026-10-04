@@ -56,13 +56,21 @@
 		//1背景 2云 3房子 4左树 5木牌/墓碑 6墓碑上东西的阴影/摆着的其他东西 墓碑上的东西 10设置
 
 		//云（不存在3云）
-        for(let i of [1,2,4,5,6,7]){
-            const cloud=core.animate(core.ani["ssc"+i],layer);
-            cloud.cr.zIndex=2;cloud.repeat=-1;
+		const cloudmap={
+			1:[199,336],7:[337,422],2:[423,503],4:[504,569],6:[570,639],5:[640,706]
+		};
+		for(let i in cloudmap){
+			let range=cloudmap[i];
+			const cloud=core.animate(core.ani["ss"],layer,{
+				listMode:'whitelist',
+				list:["Cloud"+i],
+				frameRange:range
+			});
+            cloud.cr.zIndex=2;cloud.repeat=-1;cloud.rate=0.025;
 			//随机起始，无限重复
             cloud.start=core.fixed(cloud.timeline._dur*Math.random());
             cloud.play();
-        }
+		}
 
 		//左边的树
 		const ssle=core.set(
@@ -112,24 +120,41 @@
 		wbtouch.on("pointerout",()=>{Cursor=core.cursor;wbutton.texture=bimg[0];});
 		
 		//底下的叶子
-		const ssleaves=core.animate(core.ani["ssleaves"],ssgroup);
+		//const ssleaves=core.animate(core.ani["ssleaves"],ssgroup);
+		const ssleaves=core.animate(core.ani["ss"],ssgroup,{
+			listMode:'whitelist',
+			list:["leaf1","leaf2","leaf22","leaf3","leaf4","leaf5","leaf_SelectorScreen_Leaves"],
+			frameRange:[79,103]
+		});
 		ssleaves.cr.zIndex=6;ssleaves.repeat=-1;
 		ssleaves.play();
 
 		//1~2倍变速（变调）
 		let flowerpop=()=>core.pitchedsound("limbs_pop",core.fixed(core.random(1,2),2));
 		//右下角能被点掉的三朵小花（彩蛋）
-		const flowerA=core.animate(core.ani["ssf1"],ssgroup);
+		const flowerA=core.animate(core.ani["ss"],ssgroup,{
+			listMode:'whitelist',
+			list:["flower1"],
+			frameRange:[180,199]
+		});
 		flowerA.cr.zIndex=5;flowerA.frf();
 		flowerA.cr.interactive=true;
 		flowerA.cr.addEventListener("pointerdown",()=>{flowerpop();flowerA.play();},{once:true});
 
-		const flowerB=core.animate(core.ani["ssf2"],ssgroup);
+		const flowerB=core.animate(core.ani["ss"],ssgroup,{
+			listMode:'whitelist',
+			list:["flower2"],
+			frameRange:[104,161]
+		})
 		flowerB.cr.zIndex=5;flowerB.frf();
 		flowerB.cr.interactive=true;
 		flowerB.cr.addEventListener("pointerdown",()=>{flowerpop();flowerB.play();},{once:true});
 
-		const flowerC=core.animate(core.ani["ssf3"],ssgroup);
+		const flowerC=core.animate(core.ani["ss"],ssgroup,{
+			listMode:'whitelist',
+			list:["flower3"],
+			frameRange:[162,180]
+		})
 		flowerC.cr.zIndex=5;flowerC.frf();
 		flowerC.cr.interactive=true;
 		flowerC.cr.addEventListener("pointerdown",()=>{flowerpop();flowerC.play();},{once:true});

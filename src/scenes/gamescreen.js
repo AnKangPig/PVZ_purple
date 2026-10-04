@@ -10,7 +10,11 @@
 		const tl = gsap.timeline();
 		core.timelines.push(tl);
 
-        let sf=core.animate(core.ani["sunflower"],layer);
+        let sf=core.animate(core.ani["sunflower"],layer,{
+			listMode:'blacklist',
+			list:["anim_blink"],
+			frameRange:[5,29]
+		});
         sf.cr.zIndex=3;sf.repeat=-1;sf.play();
         sf.cr.position.set(400,300);
         let sfb=core.animate(core.ani["sfblink"],sf.get("anim_idle"));

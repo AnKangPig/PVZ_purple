@@ -209,8 +209,9 @@
 		 * options={
 		 * 		listMode:...,// 'whitelist' | 'blacklist' | 'all'
 		 * 		list:[...],
-		 * 		startFrame = null,
-		 * 		endFrame = null
+		 * 		startFrame:...,
+		 * 		endFrame:...,
+		 * 		(frameRange:[...,...])
 		 * }
 		 */
 		const fps = data.fps;
@@ -222,8 +223,13 @@
 		const list=options.list||[];
 		//是否不为undefined和null的简写形式
 		const _o = v => (v !== undefined&&v !== null);
-		const start=(_o(options.startFrame))?options.startFrame:0;
-		const end=(_o(options.endFrame))?options.endFrame:data.tracks[0].transforms.length-1;
+		let startFrame=options.startFrame,endFrame=options.endFrame;
+		if(options.frameRange){
+			startFrame=options.frameRange[0],endFrame=options.frameRange[1];
+		}
+		const start=(_o(startFrame))?startFrame:1;///以1为起始帧
+		const end=(_o(endFrame))?endFrame:data.tracks[0].transforms.length;
+		
 		const include=(name)=>{
 			switch(listMode){
 				case "whitelist":
@@ -238,37 +244,33 @@
 		const atl = gsap.timeline({ paused: true, defaults: { duration: 1 / fps } });
 		for (let t of data.tracks) {
 			if(!include(t.name))continue;
-			const transforms=t.transforms.slice(start,end+1);
-			let { frf, Aimg } = core.getfrf(transforms);
-			let sp = new Sprite(Aimg), name = t.name;
+			let sp = new Sprite(), name = t.name;
 			//一开始应为隐形状态，待第一帧(默认)alpha会设为1
 			sp.alpha = 0;
 			cr.addChild(sp);
 			//根据transform在atl的时间轴上为sp设置动作
-			core.anitrans(transforms, atl, sp);
+			let [ frf, Aimg ] = core.anitrans(t.transforms, atl, sp,[start,end]);
+			sp.texture=Aimg||PIXI.Texture.EMPTY;
 			elements.push({ name, frf, sp })
 		}
 		return new core.Ani(cr, elements, atl);
 	};
-	core.anitrans = function (tlist, atl, sp) {
-		let last = null;
+	core.anitrans = function (tlist, atl, sp,range) {
+		let last = null,frf=null,img=null;
 		tlist.forEach((trans, i) => {
 			let action;
 			[action, last] = core.handleframe(trans, last);
+			if(i<range[0]-1||i>range[1]-1)return;
+			if(last.texture&&(!frf)&&(Object.keys(action).length!==1||action.alpha!==undefined)){
+				frf={ ...last, pixi: { ...last.pixi } };
+				img=last.texture;
+			}
+			if(i===range[0]-1)action=last;
 			//如果alpha或texture存在，则不缓动
 			if (action.alpha!==undefined||action.texture!==undefined) action.ease = "steps(1,start)";
-			atl.to(sp, action, ((i===0)?0:">"));
+			atl.to(sp, action, ((i===range[0]-1)?0:">"));
 		});
-	};
-	core.getfrf = function (transforms) {
-		for (let trans of transforms) {
-			if (trans.i) {
-				return {
-					frf: core.handleframe(trans, null)[0],
-					Aimg: img[core.REMstring(trans.i)]
-				};
-			}
-		}
+		return [frf,img];
 	};
 	core.handleframe = function (trans, last) {
 		const options = core.parseframe(trans, last);
@@ -280,17 +282,17 @@
 		//输入：x,y,sx,sy,kx,ky,f
 		//输出：x,y,scaleX,scaleY,skewY,skewX,alpha
 		//注意：skewY对应kx，skewX对应-ky
-		if (last === null) options = { x: 0, y: 0, scaleX: 1, scaleY: 1, skewX: 0, skewY: 0, alpha: 1};
-		else options = { ...last };
+		if (last === null) options = { x: 0, y: 0, alpha: 1, pixi:{scaleX: 1, scaleY: 1, skewX: 0, skewY: 0}};
+		else options = { ...last, pixi: { ...last.pixi } };
 		//是否不为undefined的简写形式
 		const _n = v => (v !== undefined);
 		//这几行或许能简略，但大概可读性不会高于当前状态
 		if (_n(trans.x)) options.x = trans.x;
 		if (_n(trans.y)) options.y = trans.y;
-		if (_n(trans.sx)) options.scaleX = trans.sx;
-		if (_n(trans.sy)) options.scaleY = trans.sy;
-		if (_n(trans.kx)) options.skewY = trans.kx;
-		if (_n(trans.ky)) options.skewX = -trans.ky;
+		if (_n(trans.sx)) options.pixi.scaleX = trans.sx;
+		if (_n(trans.sy)) options.pixi.scaleY = trans.sy;
+		if (_n(trans.kx)) options.pixi.skewY = trans.kx;
+		if (_n(trans.ky)) options.pixi.skewX = -trans.ky;
 		if (_n(trans.i)) options.texture = img[core.REMstring(trans.i)];
 		if (_n(trans.f)) {
 			switch (trans.f) {
@@ -301,16 +303,18 @@
 		return options;
 	};
 	core.actionframe = function (old, now) {
-		if (old === null) old = {};
+		if (old === null) old = {pixi:{}};
 		let cnow = {};
-		//作为PIXI元素特有的属性，需要设置类似sp.pixi.scaleX
-		const pixilist = ["scaleX", "scaleY", "skewX", "skewY"];
 		for (let n in now) {
-			if (now[n] !== old[n]) {
-				if (pixilist.includes(n)) {
-					if (!cnow.pixi) cnow.pixi = {};
-					cnow.pixi[n] = now[n];
-				} else cnow[n] = now[n];
+			if(n==="pixi"){
+				for (let p in now.pixi) {
+					if (now.pixi[p] !== old.pixi[p]) {
+						if (!cnow.pixi) cnow.pixi = {};
+						cnow.pixi[p] = now.pixi[p];
+					}
+				}
+			}else if (now[n] !== old[n]) {
+				cnow[n] = now[n];
 			}
 		}
 		return cnow;
