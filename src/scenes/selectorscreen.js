@@ -120,7 +120,6 @@
 		wbtouch.on("pointerout",()=>{Cursor=core.cursor;wbutton.texture=bimg[0];});
 		
 		//底下的叶子
-		//const ssleaves=core.animate(core.ani["ssleaves"],ssgroup);
 		const ssleaves=core.animate(core.ani["ss"],ssgroup,{
 			listMode:'whitelist',
 			list:["leaf1","leaf2","leaf22","leaf3","leaf4","leaf5","leaf_SelectorScreen_Leaves"],

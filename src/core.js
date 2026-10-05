@@ -127,11 +127,10 @@
 			this.timeline = timeline;
 			core.timelines.push(timeline);
 			this._st = 0;//开始时间（负即为延后开始）
+			this._map = new Map(elements.map(e => [e.name, e]));
 		}
 		_get(name) {
-			for (let e of this.elements) {
-				if (name === e.name) return e;
-			}
+			return this._map.get(name);
 		}
 		get(name) {
 			return this._get(name).sp;
@@ -146,12 +145,12 @@
 			if (names.length === 0) {
 				for (let e of this.elements) {
 					//e.frf需要浅复制，因为gsap函数会改动参数
-					gsap.set(e.sp, { ...e.frf });
+					gsap.set(e.sp,core.snapClone(e.frf));
 				}
 			} else {
 				for (let n of names) {
 					const e = this._get(n);
-					gsap.set(e.sp, { ...e.frf });
+					gsap.set(e.sp,core.snapClone(e.frf));
 				}
 			}
 		}
@@ -159,6 +158,12 @@
 			this.timeline.seek(this._st);
 			this.timeline.play();
 		}
+		destroy() {
+			this.timeline.kill();
+			const i = core.timelines.indexOf(this.timeline);
+			if (i >= 0) core.timelines.splice(i, 1);
+			this.cr.destroy({ children: true });
+		  }
 		get rate() {//速率
 			return this.timeline.timeScale();
 		}
@@ -255,27 +260,30 @@
 		}
 		return new core.Ani(cr, elements, atl);
 	};
-	core.anitrans = function (tlist, atl, sp,range) {
-		let last = null,frf=null,img=null;
-		tlist.forEach((trans, i) => {
-			let action;
-			[action, last] = core.handleframe(trans, last);
-			if(i<range[0]-1||i>range[1]-1)return;
-			if(last.texture&&(!frf)&&(Object.keys(action).length!==1||action.alpha!==undefined)){
-				frf={ ...last, pixi: { ...last.pixi } };
-				img=last.texture;
-			}
-			if(i===range[0]-1)action=last;
-			//如果alpha或texture存在，则不缓动
-			if (action.alpha!==undefined||action.texture!==undefined) action.ease = "steps(1,start)";
-			atl.to(sp, action, ((i===range[0]-1)?0:">"));
-		});
-		return [frf,img];
-	};
-	core.handleframe = function (trans, last) {
-		const options = core.parseframe(trans, last);
-		return [core.actionframe(last, options), options];
+core.anitrans = function (tlist, atl, sp, range) {
+	let last = null, frf = null, Aimg = null;
+	const [S, E] = [range[0]-1, range[1]-1];
+	const onlyalpha=(action)=>{Object.keys(action).length===1&&action.alpha!==undefined};
+
+	// 先跑状态机，得到每一帧的完整快照
+	const snaps = tlist.map(t => (last = core.parseframe(t, last)));
+
+	for (let i = S; i <= E; i++) {
+		const snap = snaps[i];
+		const action=(i === S)?core.snapClone(snap):core.actionframe(snaps[i-1], snap);
+		if (snap.texture && frf === null&&(!onlyalpha(action))) {
+		frf=core.snapClone(snap);
+		Aimg=snap.texture;
+		}
+		//如果alpha或texture存在，则不缓动
+		if (action.alpha !== undefined || action.texture !== undefined)action.ease = "steps(1,start)";
+		atl.to(sp, action, i === S ? 0 : ">");
 	}
+	return [frf, Aimg];
+	};
+	core.snapClone=function(snap){
+		return {...snap,pixi:{...snap.pixi}};
+	};
 	core.parseframe = function (trans, last) {
 		let options;
 		//七种输入对应七种输出
@@ -283,7 +291,7 @@
 		//输出：x,y,scaleX,scaleY,skewY,skewX,alpha
 		//注意：skewY对应kx，skewX对应-ky
 		if (last === null) options = { x: 0, y: 0, alpha: 1, pixi:{scaleX: 1, scaleY: 1, skewX: 0, skewY: 0}};
-		else options = { ...last, pixi: { ...last.pixi } };
+		else options = core.snapClone(last);
 		//是否不为undefined的简写形式
 		const _n = v => (v !== undefined);
 		//这几行或许能简略，但大概可读性不会高于当前状态
