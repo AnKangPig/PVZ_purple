@@ -34,7 +34,6 @@
 		["WoodSign", "WoodSign"],
 		["SelectorScreen", "ss"],
 		["SunFlower", "sunflower"],
-		["SunFlower_Blink", "sfblink"],
 		["Wallnut", "wnut"],
 		["Wallnut_Twitch","wntwitch"],
 		["Wallnut_Blink","wnblink"]

@@ -315,11 +315,15 @@
 		let cnow = {};
 		for (let n in now) {
 			if(n==="pixi"){
-				for (let p in now.pixi) {
-					if (now.pixi[p] !== old.pixi[p]) {
-						if (!cnow.pixi) cnow.pixi = {};
-						cnow.pixi[p] = now.pixi[p];
+				if(old.pixi){
+					for (let p in now.pixi) {
+						if (now.pixi[p] !== old.pixi[p]) {
+							if (!cnow.pixi) cnow.pixi = {};
+							cnow.pixi[p] = now.pixi[p];
+						}
 					}
+				}else{
+					cnow.pixi={...now.pixi};
 				}
 			}else if (now[n] !== old[n]) {
 				cnow[n] = now[n];

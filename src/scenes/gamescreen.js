@@ -15,10 +15,21 @@
 			list:["anim_blink"],
 			frameRange:[5,29]
 		});
-        sf.cr.zIndex=3;sf.repeat=-1;sf.play();
-        sf.cr.position.set(400,300);
-        let sfb=core.animate(core.ani["sfblink"],sf.get("anim_idle"));
-        sfb.cr.zIndex=4;
+        sf.repeat=-1;sf.play();
+        core.set(sf.cr,{
+            zIndex:3,
+            position:[300,300]
+        });
+        let sfb=core.animate(core.ani["sunflower"],sf.get("anim_idle"),{
+			listMode:'whitelist',
+			list:["anim_blink"],
+			frameRange:[1,5]
+        });
+        core.set(sfb.cr,{
+            zIndex:4,
+            pos:[-18,-22],
+            scale:1.25
+        });
         let sfbtl=gsap.timeline({repeat:-1});
         sfbtl.timeScale(core.random(0.6,1.4));
         sfbtl.add(()=>{
@@ -41,7 +52,7 @@
         wnbthricetl.add(()=>{wnb.play();},1);
         let wnt=core.animate(core.ani["wntwitch"],wn.get("anim_face"));
         wnt.cr.zIndex=4;wnt.cr.position.set(2,7);
-        window.aaa=[wnb,wnbtwicetl,wnbthricetl,wnt]
+        //window.aaa=[wnb,wnbtwicetl,wnbthricetl,wnt]
         const wnbf=()=>{
             let ra=Math.floor((Math.random()*3));
             switch(ra){
