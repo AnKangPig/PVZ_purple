@@ -260,26 +260,26 @@
 		}
 		return new core.Ani(cr, elements, atl);
 	};
-core.anitrans = function (tlist, atl, sp, range) {
-	let last = null, frf = null, Aimg = null;
-	const [S, E] = [range[0]-1, range[1]-1];
-	const onlyalpha=(action)=>{Object.keys(action).length===1&&action.alpha!==undefined};
+	core.anitrans = function (tlist, atl, sp, range) {
+		let last = null, frf = null, Aimg = null;
+		const [S, E] = [range[0]-1, range[1]-1];
+		const onlyalpha=(action)=>{Object.keys(action).length===1&&action.alpha!==undefined};
 
-	// 先跑状态机，得到每一帧的完整快照
-	const snaps = tlist.map(t => (last = core.parseframe(t, last)));
+		// 先跑状态机，得到每一帧的完整快照
+		const snaps = tlist.map(t => (last = core.parseframe(t, last)));
 
-	for (let i = S; i <= E; i++) {
-		const snap = snaps[i];
-		const action=(i === S)?core.snapClone(snap):core.actionframe(snaps[i-1], snap);
-		if (snap.texture && frf === null&&(!onlyalpha(action))) {
-		frf=core.snapClone(snap);
-		Aimg=snap.texture;
+		for (let i = S; i <= E; i++) {
+			const snap = snaps[i];
+			const action=(i === S)?core.snapClone(snap):core.diffframe(snaps[i-1], snap);
+			if (snap.texture&&frf === null&&(!onlyalpha(action))) {
+				frf=core.snapClone(snap);
+				Aimg=snap.texture;
+			}
+			//如果alpha或texture存在，则不缓动
+			if (action.alpha !== undefined || action.texture !== undefined)action.ease = "steps(1,start)";
+			atl.to(sp, action, i === S ? 0 : ">");
 		}
-		//如果alpha或texture存在，则不缓动
-		if (action.alpha !== undefined || action.texture !== undefined)action.ease = "steps(1,start)";
-		atl.to(sp, action, i === S ? 0 : ">");
-	}
-	return [frf, Aimg];
+		return [frf, Aimg];
 	};
 	core.snapClone=function(snap){
 		return {...snap,pixi:{...snap.pixi}};
@@ -310,7 +310,7 @@ core.anitrans = function (tlist, atl, sp, range) {
 		}
 		return options;
 	};
-	core.actionframe = function (old, now) {
+	core.diffframe = function (old, now) {
 		if (old === null) old = {pixi:{}};
 		let cnow = {};
 		for (let n in now) {
@@ -462,7 +462,7 @@ core.anitrans = function (tlist, atl, sp, range) {
 		});
 	};
 
-	core.importImage = function () {//开发者使用，自动导入img文件夹内的png图片并存入img.json
+	core.importImage = function () {//开发者使用，自动导入img文件夹内的png图片并存入img.json（仅限开始游戏.exe部署）
 		let filelist;
 		fs.readdir("./assets/image", (err, data) => {
 			if (err) {
