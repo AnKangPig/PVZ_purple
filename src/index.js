@@ -4,15 +4,17 @@
 		/*显示加载所用字体，请务必在loadfont最先加载它。
 		在LoadingFont字体未加载时，会显示"./assets/image/loading.png"作为代替项。
 		可使用"default"表示使用浏览器默认字体*/
+		useCache:true,
+		/*使用IndexedDB中的sheets缓存*/
 	};
 	//加载的js
 	let loadjs = [
-		"thirdparty/fs.js",
-		"thirdparty/pixi.min.js",
-		"thirdparty/unsafe-eval.min.js",
-		"thirdparty/speet.min.js",
-		"thirdparty/gsap.min.js",
-		"thirdparty/PixiPlugin.min.js",
+		"lib/fs.js",
+		"lib/pixi.min.js",
+		"lib/unsafe-eval.min.js",
+		"lib/speet.min.js",
+		"lib/gsap.min.js",
+		"lib/PixiPlugin.min.js",
 		"core.js",
 		"init.js",
 		"scenes/startscreen.js",
@@ -59,7 +61,7 @@
 		});
 	}
 
-	//加载的图片文件（使用core.importImage生成image.ison）
+	//加载的图片文件（使用core.importImage或npm run import:image生成image.ison）
 	const loadimage = await (await fetch('./assets/image/image.json')).json();
 
 	//加载的中文字体（有版权争议，须声明以免责）
@@ -151,8 +153,8 @@
 	};
 	core.handleSheet=async function(data,ani){
 		let list=core.aniCollect(data);
-		let sheetdata=null;
-		let cache=await core.cacheGet("sheets",ani[0]);
+		let sheetdata=null,cache=null;
+		if(setting.useCache)cache=await core.cacheGet("sheets",ani[0]);
 		if(cache){
 			try{
 				sheetdata={
@@ -177,9 +179,9 @@
 		const sheet = new PIXI.Spritesheet(PIXI.Texture.from(sheetdata.image),sheetdata.data);
 		await sheet.parse();
 		core.ani[ani[1]] = [data,sheet];
-		for (const key of Object.keys(list)) {
+		//将图片加入img
+		for (const key in list) {
 			const texture=sheet.textures[key];
-			//预加载一些图片文件
 			if (!core.img[key]) {core.img[key]=texture;}
 		}
 	};

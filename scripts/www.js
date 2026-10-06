@@ -11,7 +11,7 @@ if (fs.existsSync(dest)) {
 fs.mkdirSync(dest, { recursive: true });
 
 // 需要复制的项目
-const items = ['index.html', 'src', 'libs','assets'];
+const items = ['index.html', 'src','assets'];
 
 function copyRecursive(src, dst) {
   const stat = fs.statSync(src);

@@ -10,6 +10,8 @@ ckcz123大佬的mota-js-server（一个本地HTTP服务器程序，即“开始�
 
 PIXI.js
 
+Speet（一个精灵图生成库）
+
 GSAP
 
 fs.js（来自mota-js）
