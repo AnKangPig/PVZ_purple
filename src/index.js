@@ -77,6 +77,112 @@
 	//可以直接使用img
 	window.img = core.img;
 
+	//加载动画JSON文件的函数
+	core.aniJSON = async function (name) {
+		const response = await fetch('./assets/animation/' + name );
+		return await response.json();
+	}
+		/**
+	 * 将animate中的默认格式转为正常名称
+	 * @param {string} inp 输入字符串
+	 * @returns {string} 输出正常名称
+	 * @example core.REMstring("IMAGE_REANIM_POTATOMINE_ROCK3") //输出"PotatoMine_rock3"
+	 */
+	core.REMstring = function (inp) {
+		let str = inp.replace("IMAGE_REANIM_", "");
+		//从导入的图片列表中查找，若有，则输出
+		for (let name of core.loadlist.loadimage.items) {
+			if (name.toUpperCase() === str) return name;
+		}
+		//若无，则全部小写（运行到这里可以视为异常）
+		console.log("REMstring发生错误");
+		return str.toLowerCase();
+	}
+	core.aniCollect = function (data) {
+		const list={};
+		for (const t of data.tracks) {
+		  for (const trans of t.transforms) {
+			if (trans.i !== undefined && trans.i !== null) {
+				let name=core.REMstring(trans.i);
+				list[name]="./assets/image/"+name+".png";
+			}
+		  }
+		}
+		return list;
+	};
+	core.dbPromise = null;
+	core.openDB=function(){
+		if (core.dbPromise)return core.dbPromise;
+		core.dbPromise=new Promise((resolve, reject)=>{
+		  	const req = indexedDB.open('pvz-cache', 1);
+		  	req.onupgradeneeded = () => {
+				const db = req.result;
+				if (!db.objectStoreNames.contains('sheets')) {
+				  db.createObjectStore('sheets');
+				}
+		  	};
+		  	req.onsuccess = () => resolve(req.result);
+		  	req.onerror = () => reject(req.error);
+		});
+		return core.dbPromise;
+	};
+	core.cachePut=async function(store,key,value){
+		const db = await core.openDB();
+		return new Promise((resolve, reject) => {
+		  	const tx = db.transaction(store, 'readwrite');
+		  	tx.objectStore(store).put(value, key);
+		  	tx.oncomplete = resolve;
+		  	tx.onerror = () => reject(tx.error);
+		});
+	};
+	core.cacheGet=async function(store,key){
+		const db = await core.openDB();
+		return new Promise((resolve) => {
+			const tx = db.transaction(store, 'readonly');
+			const req = tx.objectStore(store).get(key);
+		  	req.onsuccess = () => resolve(req.result || null);
+		  	req.onerror = () => resolve(null);
+		});
+	};
+	core.canvasToBlob=function(canvas){
+		return new Promise((resolve, reject) => {
+		  	canvas.toBlob((blob) => blob?resolve(blob):reject(new Error('toBlob failed')),'image/png');
+		});
+	};
+	core.handleSheet=async function(data,ani){
+		let list=core.aniCollect(data);
+		let sheetdata=null;
+		let cache=await core.cacheGet("sheets",ani[0]);
+		if(cache){
+			try{
+				sheetdata={
+					image:await createImageBitmap(cache.image),
+					data:cache.data,
+				};
+			} catch (err) {
+				console.warn(`[cache] sheet "${ani[0]}" 损坏，重新生成`, err);
+				cache=null;
+			}
+		}
+		if(!cache){
+			sheetdata = await speet.generate(list, {
+				padding: 2,        // 零件之间留2px间隙，防止采样时边缘渗色
+				forcePOT: true,    // 强制大图尺寸为2的幂，优化GPU内存
+			});
+			await core.cachePut("sheets",ani[0],{
+				image:await core.canvasToBlob(sheetdata.image),
+				data:sheetdata.data
+			});
+		}
+		const sheet = new PIXI.Spritesheet(PIXI.Texture.from(sheetdata.image),sheetdata.data);
+		await sheet.parse();
+		core.ani[ani[1]] = [data,sheet];
+		for (const key of Object.keys(list)) {
+			const texture=sheet.textures[key];
+			//预加载一些图片文件
+			if (!core.img[key]) {core.img[key]=texture;}
+		}
+	};
 	//加载界面的文字
 	let loadtext = t => {
 		document.documentElement.style.setProperty("--load", "'" + t + "'");
@@ -115,55 +221,11 @@
 		const Font = new FontFace(fp.name, `url(./assets/font/zh-cn/${fp.url})`);
 		lf(fp.name, Font, resolve);
 	}
-	//加载动画JSON文件的函数
-	core.aniJSON = async function (name) {
-		const response = await fetch('./assets/animation/' + name );
-		return await response.json();
-	}
-		/**
-	 * 将animate中的默认格式转为正常名称
-	 * @param {string} inp 输入字符串
-	 * @returns {string} 输出正常名称
-	 * @example core.REMstring("IMAGE_REANIM_POTATOMINE_ROCK3") //输出"PotatoMine_rock3"
-	 */
-	core.REMstring = function (inp) {
-		let str = inp.replace("IMAGE_REANIM_", "");
-		//从导入的图片列表中查找，若有，则输出
-		for (let name of core.loadlist.loadimage.items) {
-			if (name.toUpperCase() === str) return name;
-		}
-		//若无，则全部小写（运行到这里可以视为异常）
-		console.log("REMstring发生错误");
-		return str.toLowerCase();
-	}
-	core.aniCollect = function (data) {
-		const list={};
-		for (const t of data.tracks) {
-		  for (const trans of t.transforms) {
-			if (trans.i !== undefined && trans.i !== null) {
-				let name=core.REMstring(trans.i);
-				list[name]="./assets/image/"+name+".png";
-			}
-		  }
-		}
-		return list;
-	  };
+	
 	//加载动画文件
 	let la = (ani, resolve) => {
 		core.aniJSON(ani[0]).then(async data => {
-			let list=core.aniCollect(data);
-			const spresult = await speet.generate(list, {
-				padding: 2,        // 零件之间留2px间隙，防止采样时边缘渗色
-				forcePOT: true,    // 强制大图尺寸为2的幂，优化GPU内存
-			  });
-			const sheet = new PIXI.Spritesheet(PIXI.Texture.from(spresult.image),spresult.data);
-			await sheet.parse();
-			core.ani[ani[1]] = [data,sheet];
-			for (const key of Object.keys(list)) {
-				const texture=sheet.textures[key];
-				//预加载一些图片文件
-				if (!core.img[key]) {core.img[key]=texture;}
-			}
+			await core.handleSheet(data,ani);
 			resolve();
 		});
 	}
