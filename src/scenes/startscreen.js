@@ -122,14 +122,14 @@
 			{ pos: [  47, -76], scale: [-1, 1],      delay: 2.0, soundAt: 2.07 },
 		];
 		for (const s of sproutParams) {
-			const sprout = core.animate(core.ani["sprout"], loadbar);
+			const sprout = core.animate("sprout", loadbar);
 			core.set(sprout.cr, { pos: s.pos, zIndex: 3, scale: s.scale });
 			sprout.delay = s.delay;
 			sprout.play();
 			core.sound("loadingbar_flower", s.soundAt, tl);
 		}
 
-		const zomhead=core.animate(core.ani["zomhead"],loadbar);
+		const zomhead=core.animate("zomhead",loadbar);
 		core.set(zomhead.cr,{pos:[84,-78],zIndex:3});
 		zomhead.delay=2.3;zomhead.play();
 		core.sound("loadingbar_flower",2.37,tl);

@@ -61,7 +61,7 @@
 		};
 		for(let i in cloudmap){
 			let range=cloudmap[i];
-			const cloud=core.animate(core.ani["ss"],layer,{
+			const cloud=core.animate("ss",layer,{
 				listMode:'whitelist',
 				list:["Cloud"+i],
 				frameRange:range
@@ -100,7 +100,7 @@
 		);
 
 		//木牌
-		const woodsign=core.animate(core.ani["WoodSign"],layer);
+		const woodsign=core.animate("WoodSign",layer);
 		woodsign.cr.zIndex=5;woodsign.play();
 
 		//交互部分
@@ -120,7 +120,7 @@
 		wbtouch.on("pointerout",()=>{Cursor=core.cursor;wbutton.texture=bimg[0];});
 		
 		//底下的叶子
-		const ssleaves=core.animate(core.ani["ss"],ssgroup,{
+		const ssleaves=core.animate("ss",ssgroup,{
 			listMode:'whitelist',
 			list:["leaf1","leaf2","leaf22","leaf3","leaf4","leaf5","leaf_SelectorScreen_Leaves"],
 			frameRange:[79,103]
@@ -131,7 +131,7 @@
 		//1~2倍变速（变调）
 		let flowerpop=()=>core.pitchedsound("limbs_pop",core.fixed(core.random(1,2),2));
 		//右下角能被点掉的三朵小花（彩蛋）
-		const flowerA=core.animate(core.ani["ss"],ssgroup,{
+		const flowerA=core.animate("ss",ssgroup,{
 			listMode:'whitelist',
 			list:["flower1"],
 			frameRange:[180,199]
@@ -140,7 +140,7 @@
 		flowerA.cr.interactive=true;
 		flowerA.cr.addEventListener("pointerdown",()=>{flowerpop();flowerA.play();},{once:true});
 
-		const flowerB=core.animate(core.ani["ss"],ssgroup,{
+		const flowerB=core.animate("ss",ssgroup,{
 			listMode:'whitelist',
 			list:["flower2"],
 			frameRange:[104,161]
@@ -149,7 +149,7 @@
 		flowerB.cr.interactive=true;
 		flowerB.cr.addEventListener("pointerdown",()=>{flowerpop();flowerB.play();},{once:true});
 
-		const flowerC=core.animate(core.ani["ss"],ssgroup,{
+		const flowerC=core.animate("ss",ssgroup,{
 			listMode:'whitelist',
 			list:["flower3"],
 			frameRange:[162,180]
@@ -375,7 +375,7 @@
 		},layer,10);
 	}
 	function enterAdventure(layer, ssgroup, gbspmap) {
-		const hand = core.animate(core.ani["zomhand"], ssgroup);
+		const hand = core.animate("zomhand", ssgroup);
 		hand.cr.zIndex = 5;
 		hand.play();
 	

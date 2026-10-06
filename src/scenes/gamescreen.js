@@ -10,7 +10,7 @@
 		const tl = gsap.timeline();
 		core.timelines.push(tl);
 
-        let sf=core.animate(core.ani["sunflower"],layer,{
+        let sf=core.animate("sunflower",layer,{
 			listMode:'blacklist',
 			list:["anim_blink"],
 			frameRange:[5,29]
@@ -20,7 +20,18 @@
             zIndex:3,
             position:[300,300]
         });
-        let sfb=core.animate(core.ani["sunflower"],sf.get("anim_idle"),{
+        /*for(let i=0;i<500;i++){
+            let aa=core.animate("sunflower",layer,{
+                listMode:'blacklist',
+                list:["anim_blink"],
+                frameRange:[5,29]
+            });
+            core.set(aa.cr,{
+                zIndex:3,
+                position:[300,300]
+            });
+        }*/
+        let sfb=core.animate("sunflower",sf.get("anim_idle"),{
 			listMode:'whitelist',
 			list:["anim_blink"],
 			frameRange:[1,5]
@@ -38,10 +49,10 @@
         },5);
 
         
-        let wn=core.animate(core.ani["wnut"],layer);
+        let wn=core.animate("wnut",layer);
         wn.cr.zIndex=3;wn.repeat=-1;wn.play();
         wn.cr.position.set(500,300);
-        let wnb=core.animate(core.ani["wnblink"],wn.get("anim_face"));
+        let wnb=core.animate("wnblink",wn.get("anim_face"));
         wnb.cr.zIndex=4;wnb.cr.position.set(2,1);
         let wnbtwicetl=gsap.timeline({paused:true});
         wnbtwicetl.add(()=>{wnb.play();},0.333);
@@ -50,7 +61,7 @@
         wnbthricetl.add(()=>{wnb.play();},0.333);
         wnbthricetl.add(()=>{wnb.play();},0.666);
         wnbthricetl.add(()=>{wnb.play();},1);
-        let wnt=core.animate(core.ani["wntwitch"],wn.get("anim_face"));
+        let wnt=core.animate("wntwitch",wn.get("anim_face"));
         wnt.cr.zIndex=4;wnt.cr.position.set(2,7);
         //window.aaa=[wnb,wnbtwicetl,wnbthricetl,wnt]
         const wnbf=()=>{

@@ -192,7 +192,7 @@
 		}
 
 	}
-	core.animate = function (data, parent,options) {
+	core.animate = function (name, parent,options) {
 		/**
 		 * data一般结构如下：
 		 * 	data={
@@ -219,6 +219,7 @@
 		 * 		(frameRange:[...,...])
 		 * }
 		 */
+		const [data,sheet]=core.ani[name];
 		const fps = data.fps;
 		const cr = new Container();
 		if (parent) parent.addChild(cr);
@@ -254,19 +255,19 @@
 			sp.alpha = 0;
 			cr.addChild(sp);
 			//根据transform在atl的时间轴上为sp设置动作
-			let [ frf, Aimg ] = core.anitrans(t.transforms, atl, sp,[start,end]);
+			let [ frf, Aimg ] = core.anitrans(t.transforms, atl, sp,[start,end],sheet);
 			sp.texture=Aimg||PIXI.Texture.EMPTY;
 			elements.push({ name, frf, sp })
 		}
 		return new core.Ani(cr, elements, atl);
 	};
-	core.anitrans = function (tlist, atl, sp, range) {
+	core.anitrans = function (tlist, atl, sp, range,sheet) {
 		let last = null, frf = null, Aimg = null;
 		const [S, E] = [range[0]-1, range[1]-1];
 		const onlyalpha=(action)=>{Object.keys(action).length===1&&action.alpha!==undefined};
 
 		// 先跑状态机，得到每一帧的完整快照
-		const snaps = tlist.map(t => (last = core.parseframe(t, last)));
+		const snaps = tlist.map(t => (last = core.parseframe(t, last,sheet)));
 
 		for (let i = S; i <= E; i++) {
 			const snap = snaps[i];
@@ -284,7 +285,7 @@
 	core.snapClone=function(snap){
 		return {...snap,pixi:{...snap.pixi}};
 	};
-	core.parseframe = function (trans, last) {
+	core.parseframe = function (trans, last,sheet) {
 		let options;
 		//七种输入对应七种输出
 		//输入：x,y,sx,sy,kx,ky,f
@@ -301,7 +302,7 @@
 		if (_n(trans.sy)) options.pixi.scaleY = trans.sy;
 		if (_n(trans.kx)) options.pixi.skewY = trans.kx;
 		if (_n(trans.ky)) options.pixi.skewX = -trans.ky;
-		if (_n(trans.i)) options.texture = img[core.REMstring(trans.i)];
+		if (_n(trans.i)) options.texture = sheet.textures[core.REMstring(trans.i)];
 		if (_n(trans.f)) {
 			switch (trans.f) {
 				case -1: options.alpha = 0; break;
@@ -331,24 +332,6 @@
 		}
 		return cnow;
 	}
-
-	/**
-	 * 将animate中的默认格式转为正常名称
-	 * @param {string} inp 输入字符串
-	 * @returns {string} 输出正常名称
-	 * @example core.REMstring("IMAGE_REANIM_POTATOMINE_ROCK3") //输出"PotatoMine_rock3"
-	 */
-	core.REMstring = function (inp) {
-		let str = inp.replace("IMAGE_REANIM_", "");
-		//从导入的图片列表中查找，若有，则输出
-		for (let name of core.loadlist.loadimage.items) {
-			if (name.toUpperCase() === str) return name;
-		}
-		//若无，则全部小写（运行到这里可以视为异常）
-		console.log("REMstring发生错误");
-		return str.toLowerCase();
-	}
-	
 	core.timelines = [];
 	core.killTimelines = function () {
 		while (core.timelines.length !== 0) {

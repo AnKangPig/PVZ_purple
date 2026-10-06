@@ -7,19 +7,20 @@
 	};
 	//加载的js
 	let loadjs = [
-		"thirdparty/fs",
-		"thirdparty/pixi.min",
-		"thirdparty/unsafe-eval.min",
-		"thirdparty/gsap.min",
-		"thirdparty/PixiPlugin.min",
-		"core",
-		"init",
-		"scenes/startscreen",
-		"scenes/selectorscreen",
-		"scenes/zombienote",
-		"scenes/gamescreen",
-		"widgets/dialog",
-		"widgets/optionsmenu",
+		"thirdparty/fs.js",
+		"thirdparty/pixi.min.js",
+		"thirdparty/unsafe-eval.min.js",
+		"thirdparty/speet.min.js",
+		"thirdparty/gsap.min.js",
+		"thirdparty/PixiPlugin.min.js",
+		"core.js",
+		"init.js",
+		"scenes/startscreen.js",
+		"scenes/selectorscreen.js",
+		"scenes/zombienote.js",
+		"scenes/gamescreen.js",
+		"widgets/dialog.js",
+		"widgets/optionsmenu.js",
 	];
 	//加载的英文字体
 	let loadEnFont = [
@@ -28,15 +29,15 @@
 
 	//加载的动画文件
 	let loadanimate = [
-		["LoadBar_sprout", "sprout"],
-		["LoadBar_Zombiehead", "zomhead"],
-		["Zombie_hand", "zomhand"],
-		["WoodSign", "WoodSign"],
-		["SelectorScreen", "ss"],
-		["SunFlower", "sunflower"],
-		["Wallnut", "wnut"],
-		["Wallnut_Twitch","wntwitch"],
-		["Wallnut_Blink","wnblink"]
+		["LoadBar_sprout.json", "sprout"],
+		["LoadBar_Zombiehead.json", "zomhead"],
+		["Zombie_hand.json", "zomhand"],
+		["WoodSign.json", "WoodSign"],
+		["SelectorScreen.json", "ss"],
+		["SunFlower.json", "sunflower"],
+		["Wallnut.json", "wnut"],
+		["Wallnut_Twitch.json","wntwitch"],
+		["Wallnut_Blink.json","wnblink"]
 	];
 
 
@@ -58,7 +59,7 @@
 		});
 	}
 
-	//加载的图片文件（使用core.importImage生成img.ison）
+	//加载的图片文件（使用core.importImage生成image.ison）
 	const loadimage = await (await fetch('./assets/image/image.json')).json();
 
 	//加载的中文字体（有版权争议，须声明以免责）
@@ -83,7 +84,7 @@
 	//加载js文件
 	let ljs = (js, resolve) => {
 		let script = document.createElement('script');
-		let src = "./src/" + js + ".js";
+		let src = "./src/" + js;
 		if (js.startsWith("lib:")) {
 			src = js.replace(/^lib:/, "");
 		}
@@ -116,18 +117,59 @@
 	}
 	//加载动画JSON文件的函数
 	core.aniJSON = async function (name) {
-		const response = await fetch('./assets/animation/' + name + '.json');
+		const response = await fetch('./assets/animation/' + name );
 		return await response.json();
 	}
+		/**
+	 * 将animate中的默认格式转为正常名称
+	 * @param {string} inp 输入字符串
+	 * @returns {string} 输出正常名称
+	 * @example core.REMstring("IMAGE_REANIM_POTATOMINE_ROCK3") //输出"PotatoMine_rock3"
+	 */
+	core.REMstring = function (inp) {
+		let str = inp.replace("IMAGE_REANIM_", "");
+		//从导入的图片列表中查找，若有，则输出
+		for (let name of core.loadlist.loadimage.items) {
+			if (name.toUpperCase() === str) return name;
+		}
+		//若无，则全部小写（运行到这里可以视为异常）
+		console.log("REMstring发生错误");
+		return str.toLowerCase();
+	}
+	core.aniCollect = function (data) {
+		const list={};
+		for (const t of data.tracks) {
+		  for (const trans of t.transforms) {
+			if (trans.i !== undefined && trans.i !== null) {
+				let name=core.REMstring(trans.i);
+				list[name]="./assets/image/"+name+".png";
+			}
+		  }
+		}
+		return list;
+	  };
 	//加载动画文件
 	let la = (ani, resolve) => {
-		core.aniJSON(ani[0]).then(data => {
-			core.ani[ani[1]] = data; resolve();
+		core.aniJSON(ani[0]).then(async data => {
+			let list=core.aniCollect(data);
+			const spresult = await speet.generate(list, {
+				padding: 2,        // 零件之间留2px间隙，防止采样时边缘渗色
+				forcePOT: true,    // 强制大图尺寸为2的幂，优化GPU内存
+			  });
+			const sheet = new PIXI.Spritesheet(PIXI.Texture.from(spresult.image),spresult.data);
+			await sheet.parse();
+			core.ani[ani[1]] = [data,sheet];
+			for (const key of Object.keys(list)) {
+				const texture=sheet.textures[key];
+				//预加载一些图片文件
+				if (!core.img[key]) {core.img[key]=texture;}
+			}
+			resolve();
 		});
 	}
 
 	//任务列表
-	let tasks = { f: [], im: [], si: [], ani: [] };
+	let tasks = { f: [], im: [], si: []};
 
 
 	//在“加载字体”加载前用图片显示“正在加载字体”
@@ -152,31 +194,36 @@
 	//同时加载字体文件
 	await Promise.all(tasks.f);
 
-	core.ani = {};
-	loadtext("正在加载动画文件");
-	for (let i = 0; i < loadanimate.length; i++) {
-		let ani = loadanimate[i];
-		tasks.ani.push(new Promise(resolve => { la(ani, resolve); }));
-	}
-	//同时加载动画文件
-	await Promise.all(tasks.ani);
-
 	for (let i = 0; i < loadjs.length; i++) {
 		let j = loadjs[i];
 		//先后加载js文件（有顺序）
 		await new Promise(r => {
-			loadtext("正在加载脚本" + `(${i + 1}/${loadjs.length})` + ":" + j + ".js");
+			loadtext("正在加载脚本("+(i+1)+"/"+loadjs.length+")");
 			ljs(j, r);
 		});
 	}
 
+	let aniCount=0;
+	core.ani = {};
+	for (let i = 0; i < loadanimate.length; i++) {
+		let ani = loadanimate[i];
+		//加载动画文件（不并发）
+		await new Promise(resolve => { la(ani, resolve); }).then(()=>{
+			aniCount++;
+			loadtext("正在加载动画文件("+aniCount+"/"+loadanimate.length+")");
+		})
+	}
 
-	loadtext("正在加载图片");
+	let imgCount=0;
+	const imagelength=loadimage.items.length-Object.keys(core.img).length;
 	for (let im of loadimage.items) {
-		tasks.im.push(PIXI.Assets.load("./assets/image/" + im + ".png").then(timg => {
-			core.img[im] = timg;
-		}));
-
+		if (!core.img[im]) {
+			tasks.im.push(PIXI.Assets.load("./assets/image/" + im + ".png").then(timg => {
+				core.img[im] = timg;
+				imgCount++;
+				loadtext("正在加载图片("+imgCount+"/"+imagelength+")");
+			}));
+		}
 	}
 	//同时加载图片文件
 	await Promise.all(tasks.im);
