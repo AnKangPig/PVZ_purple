@@ -449,7 +449,8 @@
 		});
 	};
 
-	core.importImage = function () {//开发者使用，自动导入img文件夹内的png图片并存入img.json（仅限开始游戏.exe部署）
+	core.importImage = function () {
+		//开发者使用，自动导入img文件夹内的png图片并存入img.json（仅限开始游戏.exe部署，其他部署用npm run import:image）
 		let filelist;
 		fs.readdir("./assets/image", (err, data) => {
 			if (err) {
@@ -457,7 +458,7 @@
 			} else {
 				filelist = data;
 				const imglist = filelist.filter(n => n.endsWith(".png")).map(n => n.slice(0, -4));
-				fs.writeFile("./assets/image/image.json", JSON.stringify({items:imglist}, null, "	"), "utf-8", () => { console.log("导入成功"); });
+				fs.writeFile("./assets/image/image.json", JSON.stringify({items:imglist}, null, "\t"), "utf-8", () => { console.log("导入成功"); });
 			}
 		});
 	}
